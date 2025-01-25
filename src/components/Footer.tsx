@@ -1,16 +1,39 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/lib/supabase";
+import { useState } from "react";
 
 export const Footer = () => {
   const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Subscribed!",
-      description: "Thank you for subscribing to our newsletter.",
-    });
+    setIsSubscribing(true);
+
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .insert([{ email }]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Subscribed!",
+        description: "Thank you for subscribing to our newsletter.",
+      });
+      setEmail("");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to subscribe. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
   };
 
   return (
@@ -43,9 +66,16 @@ export const Footer = () => {
               type="email"
               placeholder="Enter your email"
               className="bg-black border-gray-800 focus:border-primary"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
-            <Button type="submit" className="w-full bg-primary hover:bg-primary-hover text-black">
-              Subscribe
+            <Button 
+              type="submit" 
+              className="w-full bg-primary hover:bg-primary-hover text-black"
+              disabled={isSubscribing}
+            >
+              {isSubscribing ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
         </div>

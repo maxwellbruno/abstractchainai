@@ -1,42 +1,63 @@
 import { Button } from "@/components/ui/button";
-
-const PROJECTS = [
-  {
-    id: 1,
-    name: "AI Vision Pro",
-    description: "Advanced computer vision solutions for enterprise",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e",
-    category: "AI Tools",
-  },
-  {
-    id: 2,
-    name: "BlockChain Guard",
-    description: "Secure smart contract monitoring and protection",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-    category: "Security",
-  },
-  {
-    id: 3,
-    name: "Neural Network Hub",
-    description: "Distributed computing for AI model training",
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
-    category: "Infrastructure",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { useState } from "react";
 
 export const ProjectShowcase = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const { data: projects, isLoading } = useQuery({
+    queryKey: ['projects', selectedCategory],
+    queryFn: async () => {
+      let query = supabase.from('projects').select('*');
+      if (selectedCategory) {
+        query = query.eq('category', selectedCategory);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const categories = ["AI Tools", "Security", "Infrastructure", "DeFi", "Research"];
+
+  if (isLoading) {
+    return <div className="py-20 text-center">Loading projects...</div>;
+  }
+
   return (
     <div className="py-20 px-4">
-      <h2 className="text-3xl font-bold mb-12 text-center">Featured Projects</h2>
+      <h2 className="text-3xl font-bold mb-8 text-center">Featured Projects</h2>
+      
+      <div className="flex flex-wrap justify-center gap-4 mb-12">
+        <Button
+          variant={selectedCategory === null ? "default" : "outline"}
+          onClick={() => setSelectedCategory(null)}
+          className="bg-primary hover:bg-primary-hover text-black"
+        >
+          All
+        </Button>
+        {categories.map((category) => (
+          <Button
+            key={category}
+            variant={selectedCategory === category ? "default" : "outline"}
+            onClick={() => setSelectedCategory(category)}
+            className={selectedCategory === category ? "bg-primary hover:bg-primary-hover text-black" : ""}
+          >
+            {category}
+          </Button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        {PROJECTS.map((project) => (
+        {projects?.map((project) => (
           <div
             key={project.id}
             className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 group"
           >
             <div className="relative h-48 overflow-hidden">
               <img
-                src={project.image}
+                src={project.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"}
                 alt={project.name}
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
               />
@@ -46,9 +67,15 @@ export const ProjectShowcase = () => {
               <span className="text-primary text-sm font-medium">{project.category}</span>
               <h3 className="text-xl font-bold mt-2 mb-3">{project.name}</h3>
               <p className="text-gray-400 mb-4">{project.description}</p>
-              <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-black">
-                Learn More
-              </Button>
+              {project.website && (
+                <Button 
+                  variant="outline" 
+                  className="w-full border-primary text-primary hover:bg-primary hover:text-black"
+                  onClick={() => window.open(project.website, '_blank')}
+                >
+                  Visit Project
+                </Button>
+              )}
             </div>
           </div>
         ))}
