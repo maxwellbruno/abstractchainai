@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 export const ProjectShowcase = () => {
+  const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects, isLoading, error } = useQuery({
     queryKey: ['projects', selectedCategory],
     queryFn: async () => {
       let query = supabase.from('projects').select('*');
@@ -14,7 +16,14 @@ export const ProjectShowcase = () => {
         query = query.eq('category', selectedCategory);
       }
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to load projects. Please try again.",
+          variant: "destructive",
+        });
+        throw error;
+      }
       return data;
     },
   });
@@ -22,7 +31,27 @@ export const ProjectShowcase = () => {
   const categories = ["AI Tools", "Security", "Infrastructure", "DeFi", "Research"];
 
   if (isLoading) {
-    return <div className="py-20 text-center">Loading projects...</div>;
+    return (
+      <div className="py-20 text-center">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-card w-48 mx-auto rounded"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-card rounded-lg h-96"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-20 text-center">
+        <h2 className="text-2xl font-bold text-destructive">Failed to load projects</h2>
+        <p className="text-muted-foreground mt-2">Please try again later</p>
+      </div>
+    );
   }
 
   return (
