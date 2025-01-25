@@ -48,7 +48,7 @@ export const Footer = () => {
           <ul className="space-y-2">
             <li><a href="#" className="text-gray-400 hover:text-primary">About Us</a></li>
             <li><a href="#" className="text-gray-400 hover:text-primary">Projects</a></li>
-            <li><a href="#submission-form" className="text-gray-400 hover:text-primary">Submit Project</a></li>
+            <li><a href="#" className="text-gray-400 hover:text-primary">Submit Project</a></li>
           </ul>
         </div>
         <div className="space-y-4">
