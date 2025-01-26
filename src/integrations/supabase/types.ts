@@ -18,7 +18,7 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
-          user_id: string
+          user_id: string | null
           website: string | null
         }
         Insert: {
@@ -29,7 +29,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
-          user_id: string
+          user_id?: string | null
           website?: string | null
         }
         Update: {
@@ -40,7 +40,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           name?: string
-          user_id?: string
+          user_id?: string | null
           website?: string | null
         }
         Relationships: []
