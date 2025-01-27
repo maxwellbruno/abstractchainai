@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { PROJECT_CATEGORIES } from "@/lib/constants";
+import { PROJECT_CATEGORIES, type ProjectCategory } from "@/lib/constants";
 
 export const SubmissionForm = () => {
   const { toast } = useToast();
@@ -14,7 +14,7 @@ export const SubmissionForm = () => {
     description: "",
     website: "",
     features: "",
-    category: PROJECT_CATEGORIES[0],
+    category: PROJECT_CATEGORIES[0] as ProjectCategory,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,7 +32,13 @@ export const SubmissionForm = () => {
         title: "Project Submitted!",
         description: "We'll review your submission and get back to you soon.",
       });
-      setFormData({ name: "", description: "", website: "", features: "", category: PROJECT_CATEGORIES[0] });
+      setFormData({ 
+        name: "", 
+        description: "", 
+        website: "", 
+        features: "", 
+        category: PROJECT_CATEGORIES[0] 
+      });
     } catch (error) {
       toast({
         title: "Error",
@@ -95,7 +101,7 @@ export const SubmissionForm = () => {
             <label className="block text-sm font-medium mb-2">Category</label>
             <select
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value as ProjectCategory })}
               className="w-full bg-card border border-gray-800 rounded-md px-3 py-2 focus:border-primary"
               required
             >

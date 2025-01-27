@@ -26,3 +26,5 @@ export const PROJECT_CATEGORIES = [
   'Personal Assistants',
   'Data Monetization'
 ] as const;
+
+export type ProjectCategory = typeof PROJECT_CATEGORIES[number];
