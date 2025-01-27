@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import { PROJECT_CATEGORIES } from "@/lib/constants";
 
 export const ProjectShowcase = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -19,8 +20,6 @@ export const ProjectShowcase = () => {
     },
   });
 
-  const categories = ["AI Tools", "Security", "Infrastructure", "DeFi", "Research"];
-
   if (isLoading) {
     return <div className="py-20 text-center">Loading projects...</div>;
   }
@@ -29,15 +28,15 @@ export const ProjectShowcase = () => {
     <div className="py-20 px-4">
       <h2 className="text-3xl font-bold mb-8 text-center">Featured Projects</h2>
       
-      <div className="flex flex-wrap justify-center gap-4 mb-12">
+      <div className="flex flex-wrap justify-center gap-4 mb-12 max-w-7xl mx-auto">
         <Button
           variant={selectedCategory === null ? "default" : "outline"}
           onClick={() => setSelectedCategory(null)}
-          className="bg-primary hover:bg-primary-hover text-black"
+          className={selectedCategory === null ? "bg-primary hover:bg-primary-hover text-black" : ""}
         >
           All
         </Button>
-        {categories.map((category) => (
+        {PROJECT_CATEGORIES.map((category) => (
           <Button
             key={category}
             variant={selectedCategory === category ? "default" : "outline"}
