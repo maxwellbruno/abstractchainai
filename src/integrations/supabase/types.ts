@@ -29,6 +29,7 @@ export type Database = {
       }
       projects: {
         Row: {
+          approved: boolean | null
           category: string
           created_at: string
           description: string
@@ -40,6 +41,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          approved?: boolean | null
           category: string
           created_at?: string
           description: string
@@ -51,6 +53,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          approved?: boolean | null
           category?: string
           created_at?: string
           description?: string
