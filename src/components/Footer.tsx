@@ -71,7 +71,7 @@ export const Footer = () => {
               required
             />
             <Button 
-              type="submit" 
+              type="submit"
               className="w-full bg-primary hover:bg-primary-hover text-black"
               disabled={isSubscribing}
             >
