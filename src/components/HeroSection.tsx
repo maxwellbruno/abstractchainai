@@ -7,7 +7,7 @@ export const HeroSection = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
       <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
-        AbstractchainAI
+        Discover AI Projects On Abstract
       </h1>
       <div className="h-[32px] md:h-[40px] overflow-hidden mb-8">
         <div className="animate-text-slide">

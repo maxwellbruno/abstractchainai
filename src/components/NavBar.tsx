@@ -36,13 +36,8 @@ export const NavBar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo and primary navigation */}
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2">
-              <img
-                src="/placeholder.svg"
-                alt="Logo"
-                className="h-8 w-8"
-              />
-              <span className="text-primary font-bold text-xl">AbstractAI</span>
+            <Link to="/" className="text-primary font-bold text-xl hover:text-primary-hover transition-colors">
+              AbstractchainAI
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link to="/" className="text-gray-300 hover:text-primary transition-colors">
