@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/HeroSection";
 import { NewProjectsShowcase } from "@/components/NewProjectsShowcase";
+import { ProjectShowcase } from "@/components/ProjectShowcase";
 import { SubmissionForm } from "@/components/SubmissionForm";
 import { Footer } from "@/components/Footer";
 import { NavBar } from "@/components/NavBar";
@@ -11,6 +12,7 @@ const Index = () => {
       <div className="pt-16">
         <HeroSection />
         <NewProjectsShowcase />
+        <ProjectShowcase />
         <div id="about-section" className="py-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
