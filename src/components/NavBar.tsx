@@ -1,28 +1,11 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Menu, Search, X } from "lucide-react";
-import { Button } from "./ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "./ui/navigation-menu";
-import { Input } from "./ui/input";
-import { cn } from "@/lib/utils";
+import { Logo } from "./nav/Logo";
+import { DesktopNav } from "./nav/DesktopNav";
+import { SearchBar } from "./nav/SearchBar";
+import { MobileMenu } from "./nav/MobileMenu";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger } from "./ui/navigation-menu";
+import { Link } from "react-router-dom";
 
 export const NavBar = () => {
-  const navigate = useNavigate();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   const scrollToAbout = () => {
     const aboutSection = document.getElementById('about-section');
     if (aboutSection) {
@@ -36,87 +19,14 @@ export const NavBar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo and primary navigation */}
           <div className="flex items-center gap-8">
-            <Link to="/" className="text-primary font-bold text-xl hover:text-primary-hover transition-colors">
-              AbstractchainAI
-            </Link>
-            <div className="hidden md:flex items-center gap-6">
-              <Link to="/" className="text-gray-300 hover:text-primary transition-colors">
-                Home
-              </Link>
-              <Link to="/explore" className="text-gray-300 hover:text-primary transition-colors">
-                Projects
-              </Link>
-              <button
-                onClick={scrollToAbout}
-                className="text-gray-300 hover:text-primary transition-colors"
-              >
-                About
-              </button>
-            </div>
+            <Logo />
+            <DesktopNav scrollToAbout={scrollToAbout} />
           </div>
 
           {/* Search and Menu */}
           <div className="flex items-center gap-4">
-            <div className={cn(
-              "hidden md:flex items-center transition-all duration-300",
-              isSearchOpen ? "w-64" : "w-0"
-            )}>
-              {isSearchOpen && (
-                <Input
-                  type="search"
-                  placeholder="Search projects..."
-                  className="bg-gray-900"
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      navigate(`/explore?search=${e.target.value}`);
-                    }
-                  }}
-                />
-              )}
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="hidden md:flex"
-            >
-              {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
-            </Button>
-
-            {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-4 mt-4">
-                  <Link to="/" className="text-lg">
-                    Home
-                  </Link>
-                  <Link to="/explore" className="text-lg">
-                    Projects
-                  </Link>
-                  <button onClick={scrollToAbout} className="text-left text-lg">
-                    About
-                  </button>
-                  <Input
-                    type="search"
-                    placeholder="Search projects..."
-                    className="mt-2"
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        navigate(`/explore?search=${e.target.value}`);
-                      }
-                    }}
-                  />
-                </div>
-              </SheetContent>
-            </Sheet>
+            <SearchBar />
+            <MobileMenu scrollToAbout={scrollToAbout} />
 
             {/* Desktop Navigation Menu */}
             <NavigationMenu className="hidden md:flex">
