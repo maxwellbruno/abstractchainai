@@ -4,8 +4,12 @@ import { ProjectShowcase } from "@/components/ProjectShowcase";
 import { SubmissionForm } from "@/components/SubmissionForm";
 import { Footer } from "@/components/Footer";
 import { NavBar } from "@/components/NavBar";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-black text-white">
       <NavBar />
@@ -24,6 +28,14 @@ const Index = () => {
           </div>
         </div>
         <SubmissionForm />
+        <div className="py-16 px-4 text-center">
+          <Button
+            onClick={() => navigate('/donate')}
+            className="bg-primary hover:bg-primary-hover text-black font-semibold px-8 py-4 text-lg"
+          >
+            Support Our Project
+          </Button>
+        </div>
         <Footer />
       </div>
     </div>

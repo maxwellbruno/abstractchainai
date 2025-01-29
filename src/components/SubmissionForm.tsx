@@ -8,10 +8,12 @@ import { ProjectDescriptionField } from "./form-fields/ProjectDescriptionField";
 import { ProjectWebsiteField } from "./form-fields/ProjectWebsiteField";
 import { ProjectFeaturesField } from "./form-fields/ProjectFeaturesField";
 import { ProjectCategoryField } from "./form-fields/ProjectCategoryField";
+import { ProjectImageField } from "./form-fields/ProjectImageField";
 
 export const SubmissionForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -25,9 +27,28 @@ export const SubmissionForm = () => {
     setIsSubmitting(true);
 
     try {
+      let image_url = null;
+
+      if (selectedImage) {
+        const fileExt = selectedImage.name.split('.').pop();
+        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('project-covers')
+          .upload(filePath, selectedImage);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('project-covers')
+          .getPublicUrl(filePath);
+
+        image_url = publicUrl;
+      }
+
       const { error } = await supabase
         .from('projects')
-        .insert([formData]);
+        .insert([{ ...formData, image_url }]);
 
       if (error) throw error;
 
@@ -42,6 +63,7 @@ export const SubmissionForm = () => {
         features: "", 
         category: PROJECT_CATEGORIES[0] 
       });
+      setSelectedImage(null);
     } catch (error) {
       toast({
         title: "Error",
@@ -65,6 +87,10 @@ export const SubmissionForm = () => {
       <div className="max-w-3xl mx-auto">
         <h2 className="text-3xl font-bold mb-8 text-center">Submit Your Project</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <ProjectImageField
+            value={selectedImage}
+            onChange={setSelectedImage}
+          />
           <ProjectNameField
             value={formData.name}
             onChange={(value) => updateField("name", value)}
