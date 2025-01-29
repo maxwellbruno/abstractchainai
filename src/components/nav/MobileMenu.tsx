@@ -18,30 +18,41 @@ export const MobileMenu = ({ scrollToAbout }: MobileMenuProps) => {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="w-[280px] sm:w-[350px] bg-black border-gray-800">
         <SheetHeader>
-          <SheetTitle>Menu</SheetTitle>
+          <SheetTitle className="text-white">Menu</SheetTitle>
         </SheetHeader>
-        <div className="flex flex-col gap-4 mt-4">
-          <Link to="/" className="text-lg">
+        <div className="flex flex-col gap-4 mt-6">
+          <Link 
+            to="/" 
+            className="text-lg text-white hover:text-primary transition-colors"
+          >
             Home
           </Link>
-          <Link to="/explore" className="text-lg">
+          <Link 
+            to="/explore" 
+            className="text-lg text-white hover:text-primary transition-colors"
+          >
             Projects
           </Link>
-          <button onClick={scrollToAbout} className="text-left text-lg">
+          <button 
+            onClick={scrollToAbout} 
+            className="text-left text-lg text-white hover:text-primary transition-colors"
+          >
             About
           </button>
-          <Input
-            type="search"
-            placeholder="Search projects..."
-            className="mt-2"
-            onChange={(e) => {
-              if (e.target.value) {
-                navigate(`/explore?search=${e.target.value}`);
-              }
-            }}
-          />
+          <div className="mt-4">
+            <Input
+              type="search"
+              placeholder="Search projects..."
+              className="bg-card border-gray-800 text-white"
+              onChange={(e) => {
+                if (e.target.value) {
+                  navigate(`/explore?search=${e.target.value}`);
+                }
+              }}
+            />
+          </div>
         </div>
       </SheetContent>
     </Sheet>

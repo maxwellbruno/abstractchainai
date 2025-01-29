@@ -3,9 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { PROJECT_CATEGORIES } from "@/lib/constants";
+import { useLocation } from "react-router-dom";
 
 export const ProjectShowcase = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const location = useLocation();
+  const showCategories = location.pathname === "/explore";
 
   const { data: projects, isLoading } = useQuery({
     queryKey: ['projects', selectedCategory],
@@ -28,27 +31,29 @@ export const ProjectShowcase = () => {
     <div className="py-20 px-4">
       <h2 className="text-3xl font-bold mb-8 text-center">Featured Projects</h2>
       
-      <div className="flex flex-wrap justify-center gap-4 mb-12 max-w-7xl mx-auto">
-        <Button
-          variant={selectedCategory === null ? "default" : "outline"}
-          onClick={() => setSelectedCategory(null)}
-          className={selectedCategory === null ? "bg-primary hover:bg-primary-hover text-black" : ""}
-        >
-          All
-        </Button>
-        {PROJECT_CATEGORIES.map((category) => (
+      {showCategories && (
+        <div className="flex flex-wrap justify-center gap-4 mb-12 max-w-7xl mx-auto">
           <Button
-            key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
-            onClick={() => setSelectedCategory(category)}
-            className={selectedCategory === category ? "bg-primary hover:bg-primary-hover text-black" : ""}
+            variant={selectedCategory === null ? "default" : "outline"}
+            onClick={() => setSelectedCategory(null)}
+            className={selectedCategory === null ? "bg-primary hover:bg-primary-hover text-black" : ""}
           >
-            {category}
+            All
           </Button>
-        ))}
-      </div>
+          {PROJECT_CATEGORIES.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              onClick={() => setSelectedCategory(category)}
+              className={selectedCategory === category ? "bg-primary hover:bg-primary-hover text-black" : ""}
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
         {projects?.map((project) => (
           <div
             key={project.id}
