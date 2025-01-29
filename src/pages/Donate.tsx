@@ -1,8 +1,9 @@
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Copy } from "lucide-react";
+import { Copy, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const CRYPTO_ADDRESSES = [
   {
@@ -34,6 +35,7 @@ const CRYPTO_ADDRESSES = [
 
 const Donate = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const copyToClipboard = (address: string) => {
     navigator.clipboard.writeText(address);
@@ -48,6 +50,16 @@ const Donate = () => {
       <NavBar />
       <div className="pt-32 pb-20 px-4">
         <div className="max-w-3xl mx-auto">
+          <div className="flex items-center mb-8">
+            <Button
+              variant="ghost"
+              className="text-gray-400 hover:text-white"
+              onClick={() => navigate('/')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Button>
+          </div>
           <h1 className="text-4xl font-bold text-center mb-8">Support Our Project</h1>
           <p className="text-gray-400 text-center mb-12">
             Your support helps us maintain and improve the platform. You can contribute using any of the following cryptocurrencies.
