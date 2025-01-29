@@ -6,19 +6,29 @@ import { useToast } from "@/components/ui/use-toast";
 
 const CRYPTO_ADDRESSES = [
   {
-    name: "Bitcoin (BTC)",
-    address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-    network: "Bitcoin Network"
+    name: "EVM Address (ETH, BNB, etc)",
+    address: "0x7fFA58d9E54961d9261bBc559493155219C6a19b",
+    network: "EVM Compatible Networks"
   },
   {
-    name: "Ethereum (ETH)",
-    address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-    network: "Ethereum Network"
+    name: "Bitcoin (BTC)",
+    address: "bc1p8jxayu6073ll3g5naj7nwnakjhtlv3yw7gw29e8re2he4yp3fafq9w0hw9",
+    network: "Bitcoin Taproot"
+  },
+  {
+    name: "Bitcoin Lightning",
+    address: "wastecub46@walletofsatoshi.com",
+    network: "Lightning Network"
   },
   {
     name: "Solana (SOL)",
-    address: "HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH",
+    address: "nj5q2g28toopv1aVrKDQC8P32xYyNcZDLHdwDYhGGBq",
     network: "Solana Network"
+  },
+  {
+    name: "Tron (TRX)",
+    address: "TJehLJnJKG3Ss5Z6kZqrf4dbvqZmtRvcF7",
+    network: "Tron Network"
   }
 ];
 
@@ -48,7 +58,7 @@ const Donate = () => {
                 <h3 className="text-xl font-semibold mb-2">{crypto.name}</h3>
                 <p className="text-gray-400 text-sm mb-2">{crypto.network}</p>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 bg-secondary p-3 rounded text-sm break-all">
+                  <code className="flex-1 bg-black p-3 rounded text-sm break-all">
                     {crypto.address}
                   </code>
                   <Button
