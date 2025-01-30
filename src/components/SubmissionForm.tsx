@@ -27,17 +27,33 @@ export const SubmissionForm = () => {
     setIsSubmitting(true);
 
     try {
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to submit a project.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       let image_url = null;
 
       if (selectedImage) {
         const fileExt = selectedImage.name.split('.').pop();
         const filePath = `${crypto.randomUUID()}.${fileExt}`;
 
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError, data: uploadData } = await supabase.storage
           .from('project-covers')
           .upload(filePath, selectedImage);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          throw new Error('Failed to upload image');
+        }
 
         const { data: { publicUrl } } = supabase.storage
           .from('project-covers')
@@ -46,16 +62,26 @@ export const SubmissionForm = () => {
         image_url = publicUrl;
       }
 
-      const { error } = await supabase
+      const { error: insertError } = await supabase
         .from('projects')
-        .insert([{ ...formData, image_url }]);
+        .insert([{ 
+          ...formData, 
+          image_url,
+          user_id: user.id,
+          approved: false
+        }]);
 
-      if (error) throw error;
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        throw insertError;
+      }
 
       toast({
         title: "Project Submitted!",
         description: "We'll review your submission and get back to you soon.",
       });
+      
+      // Reset form
       setFormData({ 
         name: "", 
         description: "", 
@@ -65,9 +91,10 @@ export const SubmissionForm = () => {
       });
       setSelectedImage(null);
     } catch (error) {
+      console.error('Submission error:', error);
       toast({
         title: "Error",
-        description: "Failed to submit project. Please try again.",
+        description: error.message || "Failed to submit project. Please try again.",
         variant: "destructive",
       });
     } finally {
