@@ -22,16 +22,16 @@ export const HeroSection = () => {
       <p className="text-gray-400 text-lg md:text-xl max-w-2xl mb-8">
         Join the next generation of AI and blockchain innovation. Submit your project and become part of something extraordinary.
       </p>
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <Button 
-          className="bg-primary hover:bg-primary-hover text-black font-semibold text-lg px-8 py-6"
+          className="bg-primary hover:bg-primary-hover text-black font-semibold text-base md:text-lg px-6 py-2"
           onClick={() => document.getElementById('submission-form')?.scrollIntoView({ behavior: 'smooth' })}
         >
           Submit Your Project
         </Button>
         <Button 
           variant="outline"
-          className="border-primary text-primary hover:bg-primary hover:text-black font-semibold text-lg px-8 py-6"
+          className="border-primary text-primary hover:bg-primary hover:text-black font-semibold text-base md:text-lg px-6 py-2"
           onClick={() => navigate('/explore')}
         >
           Explore Projects
