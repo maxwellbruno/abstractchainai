@@ -5,6 +5,9 @@ import { useState } from "react";
 import { PROJECT_CATEGORIES } from "@/lib/constants";
 import { useLocation } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Database } from "@/integrations/supabase/types";
+
+type Project = Database['public']['Tables']['projects']['Row'];
 
 const ITEMS_PER_PAGE = 6;
 
@@ -21,11 +24,15 @@ export const ProjectShowcase = () => {
     isLoading
   } = useInfiniteQuery({
     queryKey: ['projects', selectedCategory],
-    queryFn: async ({ pageParam = 0 }) => {
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
       let query = supabase
         .from('projects')
         .select('*')
-        .range(pageParam * ITEMS_PER_PAGE, (pageParam + 1) * ITEMS_PER_PAGE - 1)
+        .range(
+          (pageParam as number) * ITEMS_PER_PAGE, 
+          ((pageParam as number) + 1) * ITEMS_PER_PAGE - 1
+        )
         .order('created_at', { ascending: false });
       
       if (selectedCategory) {
@@ -37,7 +44,8 @@ export const ProjectShowcase = () => {
       return data;
     },
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage?.length === ITEMS_PER_PAGE ? allPages.length : undefined;
+      if (!lastPage) return undefined;
+      return lastPage.length === ITEMS_PER_PAGE ? allPages.length : undefined;
     },
   });
 
@@ -91,7 +99,7 @@ export const ProjectShowcase = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        {allProjects.map((project) => (
+        {allProjects.map((project: Project) => (
           <div
             key={project.id}
             className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 group"
