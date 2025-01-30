@@ -30,8 +30,8 @@ export const ProjectShowcase = () => {
         .from('projects')
         .select('*')
         .range(
-          (pageParam as number) * ITEMS_PER_PAGE, 
-          ((pageParam as number) + 1) * ITEMS_PER_PAGE - 1
+          pageParam * ITEMS_PER_PAGE, 
+          (pageParam + 1) * ITEMS_PER_PAGE - 1
         )
         .order('created_at', { ascending: false });
       
@@ -41,11 +41,11 @@ export const ProjectShowcase = () => {
       
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as Project[];
     },
     getNextPageParam: (lastPage, allPages) => {
-      if (!lastPage) return undefined;
-      return lastPage.length === ITEMS_PER_PAGE ? allPages.length : undefined;
+      if (!lastPage || lastPage.length < ITEMS_PER_PAGE) return undefined;
+      return allPages.length;
     },
   });
 
