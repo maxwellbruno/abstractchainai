@@ -1,30 +1,67 @@
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { PROJECT_CATEGORIES } from "@/lib/constants";
 import { useLocation } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const ITEMS_PER_PAGE = 6;
 
 export const ProjectShowcase = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const location = useLocation();
   const showCategories = location.pathname === "/explore";
 
-  const { data: projects, isLoading } = useQuery({
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading
+  } = useInfiniteQuery({
     queryKey: ['projects', selectedCategory],
-    queryFn: async () => {
-      let query = supabase.from('projects').select('*');
+    queryFn: async ({ pageParam = 0 }) => {
+      let query = supabase
+        .from('projects')
+        .select('*')
+        .range(pageParam * ITEMS_PER_PAGE, (pageParam + 1) * ITEMS_PER_PAGE - 1)
+        .order('created_at', { ascending: false });
+      
       if (selectedCategory) {
         query = query.eq('category', selectedCategory);
       }
+      
       const { data, error } = await query;
       if (error) throw error;
       return data;
     },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage?.length === ITEMS_PER_PAGE ? allPages.length : undefined;
+    },
   });
 
+  const allProjects = data?.pages.flat() || [];
+
   if (isLoading) {
-    return <div className="py-20 text-center">Loading projects...</div>;
+    return (
+      <div className="py-20 px-4">
+        <h2 className="text-3xl font-bold mb-8 text-center">Featured Projects</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-card rounded-lg overflow-hidden">
+              <Skeleton className="h-48 w-full" />
+              <div className="p-6">
+                <Skeleton className="h-4 w-24 mb-2" />
+                <Skeleton className="h-6 w-3/4 mb-3" />
+                <Skeleton className="h-4 w-full mb-4" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -54,7 +91,7 @@ export const ProjectShowcase = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-        {projects?.map((project) => (
+        {allProjects.map((project) => (
           <div
             key={project.id}
             className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 group"
@@ -64,6 +101,7 @@ export const ProjectShowcase = () => {
                 src={project.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"}
                 alt={project.name}
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-black bg-opacity-40" />
             </div>
@@ -84,6 +122,19 @@ export const ProjectShowcase = () => {
           </div>
         ))}
       </div>
+
+      {hasNextPage && (
+        <div className="text-center mt-12">
+          <Button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary hover:text-black"
+          >
+            {isFetchingNextPage ? 'Loading more...' : 'Load More Projects'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

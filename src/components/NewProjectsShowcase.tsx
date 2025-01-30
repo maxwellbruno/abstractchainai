@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const NewProjectsShowcase = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export const NewProjectsShowcase = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('*')
+        .select('id, name, description, website, image_url')
         .eq('approved', true)
         .order('created_at', { ascending: false })
         .limit(5);
@@ -26,10 +27,31 @@ export const NewProjectsShowcase = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   if (isLoading) {
-    return <div className="py-20 text-center">Loading projects...</div>;
+    return (
+      <div className="py-20 px-4">
+        <h2 className="text-3xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
+          New Projects
+        </h2>
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-card rounded-lg overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-4">
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-full mb-4" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -49,6 +71,7 @@ export const NewProjectsShowcase = () => {
                       src={project.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"}
                       alt={project.name}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">
