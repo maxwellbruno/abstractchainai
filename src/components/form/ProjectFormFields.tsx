@@ -7,20 +7,19 @@ import { ProjectImageField } from "../form-fields/ProjectImageField";
 import { Button } from "@/components/ui/button";
 import { type ProjectCategory } from "@/lib/constants";
 
+interface FormDataType {
+  name: string;
+  description: string;
+  website: string;
+  features: string;
+  category: ProjectCategory;
+}
+
 interface ProjectFormFieldsProps {
-  formData: {
-    name: string;
-    description: string;
-    website: string;
-    features: string;
-    category: ProjectCategory;
-  };
+  formData: FormDataType;
   selectedImage: File | null;
   isSubmitting: boolean;
-  updateField: <K extends keyof typeof formData>(
-    field: K,
-    value: typeof formData[K]
-  ) => void;
+  updateField: <K extends keyof FormDataType>(field: K, value: FormDataType[K]) => void;
   setSelectedImage: (file: File | null) => void;
 }
 
