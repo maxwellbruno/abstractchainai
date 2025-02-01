@@ -23,7 +23,7 @@ const Index = () => {
               About AbstractchainAI
             </h2>
             <p className="text-gray-400 text-lg md:text-xl">
-              Abstract is a platform that brings together innovative projects at the intersection of artificial intelligence and blockchain technology. We provide a space for developers, entrepreneurs, and visionaries to showcase their groundbreaking solutions and connect with a community of like-minded individuals.
+              AbstractchainAI is a platform that brings together innovative projects at the intersection of artificial intelligence and blockchain technology. We provide a space for developers, entrepreneurs, and visionaries to showcase their groundbreaking solutions and connect with a community of like-minded individuals.
             </p>
           </div>
         </div>
