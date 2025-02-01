@@ -27,19 +27,6 @@ export const SubmissionForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Get the current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to submit a project.",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
       let image_url = null;
 
       if (selectedImage) {
@@ -62,12 +49,15 @@ export const SubmissionForm = () => {
         image_url = publicUrl;
       }
 
+      // Get the current user (if logged in)
+      const { data: { user } } = await supabase.auth.getUser();
+
       const { error: insertError } = await supabase
         .from('projects')
         .insert([{ 
           ...formData, 
           image_url,
-          user_id: user.id,
+          user_id: user?.id || null, // Make user_id optional
           approved: false
         }]);
 
