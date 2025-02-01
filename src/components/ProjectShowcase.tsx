@@ -104,12 +104,17 @@ export const ProjectShowcase = () => {
             key={project.id}
             className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 group"
           >
-            <div className="relative h-48 overflow-hidden">
+            <div className="relative h-48 overflow-hidden bg-muted">
               <img
                 src={project.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"}
                 alt={project.name}
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
                 loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1485827404703-89b55fcc595e";
+                }}
               />
               <div className="absolute inset-0 bg-black bg-opacity-40" />
             </div>
