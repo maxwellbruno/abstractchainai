@@ -1,10 +1,15 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const uploadProjectImage = async (image: File): Promise<string> => {
+  if (!image) {
+    throw new Error('No image provided');
+  }
+
   // Sanitize the file name to remove non-ASCII characters
   const sanitizedFileName = image.name.replace(/[^\x00-\x7F]/g, '');
   const fileExt = sanitizedFileName.split('.').pop();
-  const filePath = `${crypto.randomUUID()}-${Date.now()}.${fileExt}`;
+  const timestamp = Date.now();
+  const filePath = `${crypto.randomUUID()}-${timestamp}.${fileExt}`;
 
   // Upload the file to Supabase Storage
   const { error: uploadError } = await supabase.storage

@@ -35,7 +35,18 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
     try {
       let image_url = null;
       if (selectedImage) {
-        image_url = await uploadProjectImage(selectedImage);
+        try {
+          image_url = await uploadProjectImage(selectedImage);
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          toast({
+            title: "Error",
+            description: "Failed to upload image. Please try again.",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
       }
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -48,8 +59,8 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
       });
 
       toast({
-        title: "Project Submitted!",
-        description: "We'll review your submission and get back to you soon.",
+        title: "Success!",
+        description: "Your project has been submitted successfully.",
       });
 
       resetForm();
@@ -57,7 +68,7 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
       console.error('Submission error:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to submit project. Please try again.",
+        description: "Failed to submit project. Please try again.",
         variant: "destructive",
       });
     } finally {
