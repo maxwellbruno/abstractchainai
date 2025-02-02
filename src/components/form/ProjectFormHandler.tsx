@@ -1,22 +1,16 @@
-import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { PROJECT_CATEGORIES, type ProjectCategory } from "@/lib/constants";
-
-interface FormData {
-  name: string;
-  description: string;
-  website: string;
-  features: string;
-  category: ProjectCategory;
-}
+import { useProjectForm } from "@/hooks/useProjectForm";
+import { uploadProjectImage } from "@/services/imageUpload";
+import { submitProject } from "@/services/projectSubmission";
+import { ProjectFormData } from "@/types/project";
 
 interface ProjectFormHandlerProps {
   children: (props: {
-    formData: FormData;
+    formData: ProjectFormData;
     selectedImage: File | null;
     isSubmitting: boolean;
-    updateField: <K extends keyof FormData>(field: K, value: FormData[K]) => void;
+    updateField: <K extends keyof ProjectFormData>(field: K, value: ProjectFormData[K]) => void;
     setSelectedImage: (file: File | null) => void;
     handleSubmit: (e: React.FormEvent) => Promise<void>;
   }) => React.ReactNode;
@@ -24,22 +18,15 @@ interface ProjectFormHandlerProps {
 
 export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    description: "",
-    website: "",
-    features: "",
-    category: PROJECT_CATEGORIES[0],
-  });
-
-  const updateField = <K extends keyof FormData>(
-    field: K,
-    value: FormData[K]
-  ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const {
+    formData,
+    selectedImage,
+    isSubmitting,
+    setIsSubmitting,
+    setSelectedImage,
+    updateField,
+    resetForm,
+  } = useProjectForm();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,66 +34,25 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
 
     try {
       let image_url = null;
-
       if (selectedImage) {
-        // Sanitize the file name to remove non-ASCII characters
-        const sanitizedFileName = selectedImage.name.replace(/[^\x00-\x7F]/g, '');
-        const fileExt = sanitizedFileName.split('.').pop();
-        const filePath = `${crypto.randomUUID()}-${Date.now()}.${fileExt}`;
-
-        // Upload the file to Supabase Storage
-        const { error: uploadError } = await supabase.storage
-          .from('project-covers')
-          .upload(filePath, selectedImage, {
-            cacheControl: '3600',
-            upsert: false
-          });
-
-        if (uploadError) {
-          console.error('Upload error:', uploadError);
-          throw new Error('Failed to upload image');
-        }
-
-        // Get the public URL for the uploaded file
-        const { data: { publicUrl } } = supabase.storage
-          .from('project-covers')
-          .getPublicUrl(filePath);
-
-        image_url = publicUrl;
+        image_url = await uploadProjectImage(selectedImage);
       }
 
-      // Get the current user
       const { data: { user } } = await supabase.auth.getUser();
 
-      // Insert the project data
-      const { error: insertError } = await supabase
-        .from('projects')
-        .insert([{ 
-          ...formData, 
-          image_url,
-          user_id: user?.id || null,
-          approved: false
-        }]);
-
-      if (insertError) {
-        console.error('Insert error:', insertError);
-        throw insertError;
-      }
+      await submitProject({
+        ...formData,
+        image_url,
+        user_id: user?.id || null,
+        approved: false,
+      });
 
       toast({
         title: "Project Submitted!",
         description: "We'll review your submission and get back to you soon.",
       });
-      
-      // Reset form after successful submission
-      setFormData({ 
-        name: "", 
-        description: "", 
-        website: "", 
-        features: "", 
-        category: PROJECT_CATEGORIES[0] 
-      });
-      setSelectedImage(null);
+
+      resetForm();
     } catch (error) {
       console.error('Submission error:', error);
       toast({
