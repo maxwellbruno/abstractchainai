@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEffect } from "react";
 
 interface ProjectImageFieldProps {
   value: File | null;
@@ -11,6 +12,15 @@ export const ProjectImageField = ({ value, onChange }: ProjectImageFieldProps) =
     const file = e.target.files?.[0] || null;
     onChange(file);
   };
+
+  // Cleanup object URL when component unmounts or when value changes
+  useEffect(() => {
+    return () => {
+      if (value) {
+        URL.revokeObjectURL(URL.createObjectURL(value));
+      }
+    };
+  }, [value]);
 
   return (
     <div className="space-y-2">
