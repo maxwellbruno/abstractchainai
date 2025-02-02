@@ -6,26 +6,30 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const Index = lazy(() => import("./pages/Index"));
-const Explore = lazy(() => import("./pages/Explore"));
-const Donate = lazy(() => import("./pages/Donate"));
+// Lazy load pages with more granular chunks
+const Index = lazy(() => import("./pages/Index" /* webpackChunkName: "index-page" */));
+const Explore = lazy(() => import("./pages/Explore" /* webpackChunkName: "explore-page" */));
+const Donate = lazy(() => import("./pages/Donate" /* webpackChunkName: "donate-page" */));
 
+// Optimize loading skeleton
 const LoadingFallback = () => (
-  <div className="min-h-screen bg-background p-8">
-    <Skeleton className="h-[400px] w-full rounded-lg" />
-    <div className="mt-8 space-y-4">
-      <Skeleton className="h-8 w-[250px]" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-full" />
+  <div className="min-h-screen bg-background p-4 md:p-8">
+    <Skeleton className="h-[300px] w-full rounded-lg" />
+    <div className="mt-4 space-y-2">
+      <Skeleton className="h-6 w-[200px]" />
+      <Skeleton className="h-4 w-full max-w-[600px]" />
     </div>
   </div>
 );
 
+// Configure QueryClient with optimized settings
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
-      retry: 1, // Only retry failed requests once
+      staleTime: 1000 * 60 * 5, // 5 minutes cache
+      cacheTime: 1000 * 60 * 30, // 30 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
     },
   },
 });
