@@ -29,6 +29,7 @@ export const useProjectForm = () => {
       category: PROJECT_CATEGORIES[0],
     });
     setSelectedImage(null);
+    setIsSubmitting(false);
   };
 
   return {

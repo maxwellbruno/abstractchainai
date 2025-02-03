@@ -31,7 +31,7 @@ export const ProjectFormFields = ({
   setSelectedImage,
 }: ProjectFormFieldsProps) => {
   return (
-    <>
+    <div className="space-y-6">
       <ProjectImageField
         value={selectedImage}
         onChange={setSelectedImage}
@@ -63,6 +63,6 @@ export const ProjectFormFields = ({
       >
         {isSubmitting ? "Submitting..." : "Submit Project"}
       </Button>
-    </>
+    </div>
   );
 };

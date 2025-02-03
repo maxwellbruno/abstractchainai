@@ -31,10 +31,20 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.description || !formData.features || !formData.category) {
+    if (!formData.name || !formData.description || !formData.category) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate tags
+    if (!formData.features || formData.features.trim() === '') {
+      toast({
+        title: "Error",
+        description: "Please add at least one tag",
         variant: "destructive",
       });
       return;
