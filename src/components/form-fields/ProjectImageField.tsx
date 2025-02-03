@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProjectImageFieldProps {
   value: File | null;
@@ -9,6 +10,7 @@ interface ProjectImageFieldProps {
 
 export const ProjectImageField = ({ value, onChange }: ProjectImageFieldProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (value) {
@@ -25,13 +27,21 @@ export const ProjectImageField = ({ value, onChange }: ProjectImageFieldProps) =
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please upload an image file');
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload an image file (JPEG, PNG, etc.)",
+          variant: "destructive",
+        });
         e.target.value = '';
         return;
       }
       // Validate file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
+        toast({
+          title: "File Too Large",
+          description: "Image size should be less than 5MB",
+          variant: "destructive",
+        });
         e.target.value = '';
         return;
       }
