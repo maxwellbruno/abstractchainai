@@ -40,6 +40,15 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
       return;
     }
 
+    if (!selectedImage) {
+      toast({
+        title: "Error",
+        description: "A project cover image is required for submission",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!formData.features || formData.features.trim() === '') {
       toast({
         title: "Error",
@@ -54,19 +63,17 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
     try {
       let image_url = null;
       
-      if (selectedImage) {
-        try {
-          image_url = await uploadProjectImage(selectedImage);
-        } catch (uploadError: any) {
-          console.error('Image upload error:', uploadError);
-          toast({
-            title: "Image Upload Error",
-            description: uploadError.message || "Failed to upload image. Please try again.",
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
-          return;
-        }
+      try {
+        image_url = await uploadProjectImage(selectedImage);
+      } catch (uploadError: any) {
+        console.error('Image upload error:', uploadError);
+        toast({
+          title: "Image Upload Error",
+          description: uploadError.message || "Failed to upload image. Please try again.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
       }
 
       const { data: { user } } = await supabase.auth.getUser();

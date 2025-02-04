@@ -52,7 +52,7 @@ export const ProjectImageField = ({ value, onChange }: ProjectImageFieldProps) =
   return (
     <div className="space-y-2">
       <Label htmlFor="project-image" className="block text-sm font-medium">
-        Project Cover Image
+        Project Cover Image <span className="text-red-500">*</span>
       </Label>
       <Input
         id="project-image"
@@ -60,6 +60,7 @@ export const ProjectImageField = ({ value, onChange }: ProjectImageFieldProps) =
         accept="image/*"
         onChange={handleChange}
         className="bg-card border-gray-800 focus:border-primary"
+        required
       />
       {previewUrl && (
         <div className="mt-2 relative w-full h-48 rounded-lg overflow-hidden">
