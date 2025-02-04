@@ -6,12 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Lazy load pages with more granular chunks
-const Index = lazy(() => import("./pages/Index" /* webpackChunkName: "index-page" */));
-const Explore = lazy(() => import("./pages/Explore" /* webpackChunkName: "explore-page" */));
-const Donate = lazy(() => import("./pages/Donate" /* webpackChunkName: "donate-page" */));
+const Index = lazy(() => import("./pages/Index"));
+const Explore = lazy(() => import("./pages/Explore"));
+const Donate = lazy(() => import("./pages/Donate"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 
-// Optimize loading skeleton
 const LoadingFallback = () => (
   <div className="min-h-screen bg-background p-4 md:p-8">
     <Skeleton className="h-[300px] w-full rounded-lg" />
@@ -22,7 +21,6 @@ const LoadingFallback = () => (
   </div>
 );
 
-// Configure QueryClient with optimized settings
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -45,6 +43,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/donate" element={<Donate />} />
+            <Route path="/project/:id" element={<ProjectDetail />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

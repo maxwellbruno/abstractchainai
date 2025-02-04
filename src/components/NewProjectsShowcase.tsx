@@ -7,7 +7,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -19,7 +18,7 @@ export const NewProjectsShowcase = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
-        .select('id, name, description, website, image_url')
+        .select('id, name, image_url')
         .eq('approved', true)
         .order('created_at', { ascending: false })
         .limit(5);
@@ -27,7 +26,7 @@ export const NewProjectsShowcase = () => {
       if (error) throw error;
       return data;
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   if (isLoading) {
@@ -41,11 +40,6 @@ export const NewProjectsShowcase = () => {
             {[...Array(3)].map((_, i) => (
               <div key={i} className="bg-card rounded-lg overflow-hidden">
                 <Skeleton className="h-48 w-full" />
-                <div className="p-4">
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-full mb-4" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
               </div>
             ))}
           </div>
@@ -65,30 +59,18 @@ export const NewProjectsShowcase = () => {
           <CarouselContent>
             {projects?.map((project) => (
               <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/3">
-                <div className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 h-full mx-2">
-                  <div className="relative h-48 overflow-hidden">
+                <div 
+                  className="mx-2 cursor-pointer group"
+                  onClick={() => navigate(`/project/${project.id}`)}
+                >
+                  <div className="relative h-48 rounded-lg overflow-hidden">
                     <img
                       src={project.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"}
                       alt={project.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <h3 className="text-xl font-bold text-white mb-1">{project.name}</h3>
-                      <p className="text-sm text-gray-200 line-clamp-2">{project.description}</p>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    {project.website && (
-                      <Button 
-                        variant="outline" 
-                        className="w-full border-primary text-primary hover:bg-primary hover:text-black"
-                        onClick={() => window.open(project.website, '_blank')}
-                      >
-                        Visit Project
-                      </Button>
-                    )}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                 </div>
               </CarouselItem>
@@ -97,16 +79,6 @@ export const NewProjectsShowcase = () => {
           <CarouselPrevious className="hidden md:flex" />
           <CarouselNext className="hidden md:flex" />
         </Carousel>
-      </div>
-      
-      <div className="text-center mt-12">
-        <Button 
-          variant="outline"
-          className="border-primary text-primary hover:bg-primary hover:text-black"
-          onClick={() => navigate('/explore')}
-        >
-          View All Projects
-        </Button>
       </div>
     </div>
   );

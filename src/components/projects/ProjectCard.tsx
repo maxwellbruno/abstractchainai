@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Database } from "@/integrations/supabase/types";
+import { useNavigate } from "react-router-dom";
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
@@ -8,9 +8,12 @@ interface ProjectCardProps {
 }
 
 export const ProjectCard = ({ project }: ProjectCardProps) => {
+  const navigate = useNavigate();
+
   return (
     <div
-      className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 group"
+      className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 group cursor-pointer"
+      onClick={() => navigate(`/project/${project.id}`)}
     >
       <div className="relative h-48 overflow-hidden bg-muted">
         <img
@@ -26,19 +29,8 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
         />
         <div className="absolute inset-0 bg-black bg-opacity-40" />
       </div>
-      <div className="p-6">
-        <span className="text-primary text-sm font-medium">{project.category}</span>
-        <h3 className="text-xl font-bold mt-2 mb-3">{project.name}</h3>
-        <p className="text-gray-400 mb-4">{project.description}</p>
-        {project.website && (
-          <Button 
-            variant="outline" 
-            className="w-full border-primary text-primary hover:bg-primary hover:text-black"
-            onClick={() => window.open(project.website, '_blank')}
-          >
-            Visit Project
-          </Button>
-        )}
+      <div className="p-4">
+        <h3 className="text-xl font-bold">{project.name}</h3>
       </div>
     </div>
   );
