@@ -55,17 +55,6 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
       let image_url = null;
       
       if (selectedImage) {
-        const { data: sessionData } = await supabase.auth.getSession();
-        if (!sessionData.session) {
-          toast({
-            title: "Authentication Required",
-            description: "Please log in to upload images with your submission.",
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
-          return;
-        }
-
         try {
           image_url = await uploadProjectImage(selectedImage);
         } catch (uploadError: any) {
