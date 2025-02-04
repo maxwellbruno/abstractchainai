@@ -1,14 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 export const uploadProjectImage = async (image: File): Promise<string> => {
   if (!image) {
     throw new Error('No image provided');
-  }
-
-  const { data: sessionData } = await supabase.auth.getSession();
-  if (!sessionData.session) {
-    throw new Error('User must be authenticated to upload images');
   }
 
   // Sanitize the file name to remove non-ASCII characters
