@@ -46,7 +46,7 @@ const ProjectDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         <NavBar />
-        <div className="container mx-auto px-4 py-8 md:pt-24 md:pb-8">
+        <div className="container mx-auto px-4 pt-24 pb-8"> {/* Added pt-24 for spacing */}
           <div className="max-w-4xl mx-auto">
             <Skeleton className="w-full h-[400px] rounded-lg mb-8" />
             <Skeleton className="h-8 w-2/3 mb-4" />
@@ -64,7 +64,7 @@ const ProjectDetail = () => {
     return (
       <div className="min-h-screen bg-background">
         <NavBar />
-        <div className="container mx-auto px-4 py-8 md:pt-24 md:pb-8">
+        <div className="container mx-auto px-4 pt-24 pb-8"> {/* Added pt-24 for spacing */}
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Project not found</h1>
             <p className="text-gray-400 mb-6">The project you're looking for doesn't exist or has been removed.</p>
@@ -83,7 +83,7 @@ const ProjectDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <NavBar />
-      <div className="container mx-auto px-4 py-8 md:pt-24 md:pb-8">
+      <div className="container mx-auto px-4 pt-24 pb-8"> {/* Added pt-24 for spacing */}
         <div className="max-w-4xl mx-auto">
           <div className="relative">
             <img
