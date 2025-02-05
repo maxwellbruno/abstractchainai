@@ -24,7 +24,11 @@ export const PROJECT_CATEGORIES = [
   'Marketing and Advertising',
   'Fraud Detection',
   'Personal Assistants',
-  'Data Monetization'
+  'Data Monetization',
+  'Music',
+  'Virtual Human',
+  'Video',
+  'Art'
 ] as const;
 
 export type ProjectCategory = typeof PROJECT_CATEGORIES[number];
