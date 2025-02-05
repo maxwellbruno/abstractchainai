@@ -4,21 +4,40 @@ import { supabase } from '@/integrations/supabase/client';
 import { NavBar } from '@/components/NavBar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
 
 const ProjectDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const { data: project, isLoading } = useQuery({
+  const { data: project, isLoading, error } = useQuery({
     queryKey: ['project', id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error loading project",
+          description: "Please try again later."
+        });
+        throw error;
+      }
+      
+      if (!data) {
+        toast({
+          variant: "destructive",
+          title: "Project not found",
+          description: "The requested project could not be found."
+        });
+        return null;
+      }
+      
       return data;
     },
   });
@@ -28,22 +47,32 @@ const ProjectDetail = () => {
       <div className="min-h-screen bg-background">
         <NavBar />
         <div className="container mx-auto px-4 py-8">
-          <Skeleton className="h-[400px] w-full rounded-lg mb-8" />
-          <Skeleton className="h-8 w-64 mb-4" />
-          <Skeleton className="h-4 w-full max-w-2xl mb-8" />
-          <Skeleton className="h-12 w-40" />
+          <div className="max-w-4xl mx-auto">
+            <Skeleton className="w-full h-[400px] rounded-lg mb-8" />
+            <Skeleton className="h-8 w-2/3 mb-4" />
+            <Skeleton className="h-4 w-full mb-6" />
+            <Skeleton className="h-4 w-full mb-2" />
+            <Skeleton className="h-4 w-3/4 mb-6" />
+            <Skeleton className="h-12 w-40" />
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!project) {
+  if (error || !project) {
     return (
       <div className="min-h-screen bg-background">
         <NavBar />
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold mb-4">Project not found</h1>
-          <Button onClick={() => navigate('/')}>Return Home</Button>
+          <p className="text-gray-400 mb-6">The project you're looking for doesn't exist or has been removed.</p>
+          <Button 
+            onClick={() => navigate('/')}
+            className="bg-primary hover:bg-primary-hover text-black"
+          >
+            Return Home
+          </Button>
         </div>
       </div>
     );
@@ -54,16 +83,26 @@ const ProjectDetail = () => {
       <NavBar />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <img
-            src={project.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"}
-            alt={project.name}
-            className="w-full h-[400px] object-cover rounded-lg mb-8"
-          />
+          <div className="relative">
+            <img
+              src={project.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"}
+              alt={project.name}
+              className="w-full h-[400px] object-cover rounded-lg mb-8"
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1485827404703-89b55fcc595e";
+              }}
+            />
+            <div className="absolute top-4 right-4">
+              <span className="bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full">
+                {project.category}
+              </span>
+            </div>
+          </div>
           <h1 className="text-3xl font-bold mb-4">{project.name}</h1>
-          <p className="text-gray-400 mb-6">{project.description}</p>
+          <p className="text-gray-400 mb-6 leading-relaxed">{project.description}</p>
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-3">Features</h2>
-            <p className="text-gray-400">{project.features}</p>
+            <p className="text-gray-400 leading-relaxed">{project.features}</p>
           </div>
           {project.website && (
             <Button 
