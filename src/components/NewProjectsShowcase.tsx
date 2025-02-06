@@ -60,7 +60,7 @@ export const NewProjectsShowcase = () => {
             {projects?.map((project) => (
               <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/3">
                 <div 
-                  className="mx-2 cursor-pointer group"
+                  className="mx-2 cursor-pointer group h-[360px]"
                   onClick={() => navigate(`/project/${project.id}`)}
                 >
                   <div className="relative h-48 rounded-lg overflow-hidden">

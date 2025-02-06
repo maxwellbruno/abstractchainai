@@ -12,7 +12,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
 
   return (
     <div
-      className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 group cursor-pointer border border-gray-800 relative"
+      className="bg-card hover:bg-card-hover rounded-lg overflow-hidden transition-all duration-300 group cursor-pointer border border-gray-800 relative h-[360px] w-full"
       onClick={() => navigate(`/project/${project.id}`)}
     >
       {/* Edge borders using pseudo-elements */}
@@ -23,7 +23,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
         <div className="absolute bottom-0 left-0 h-[20%] w-[2px] bg-primary"></div>
       </div>
 
-      <div className="relative h-48 overflow-hidden bg-muted">
+      <div className="relative h-48 w-full overflow-hidden bg-muted">
         <img
           src={project.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e"}
           alt={project.name}
@@ -38,8 +38,8 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
         <div className="absolute inset-0 bg-black bg-opacity-40" />
       </div>
       <div className="p-4 space-y-2">
-        <h3 className="text-xl font-bold">{project.name}</h3>
-        <p className="text-sm text-gray-400">{project.category}</p>
+        <h3 className="text-xl font-bold line-clamp-2">{project.name}</h3>
+        <p className="text-sm text-gray-400 line-clamp-3">{project.category}</p>
       </div>
     </div>
   );
