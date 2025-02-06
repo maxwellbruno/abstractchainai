@@ -29,5 +29,7 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
     sourcemap: false,
+    cssCodeSplit: true,
+    reportCompressedSize: false,
   },
 }));
