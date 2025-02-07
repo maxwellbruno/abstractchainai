@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +11,7 @@ import { LoadingGrid } from "./projects/LoadingGrid";
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 3; // Changed from 6 to 3
 
 export const ProjectShowcase = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
