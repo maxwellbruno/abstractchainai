@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -21,7 +22,7 @@ export const NewProjectsShowcase = () => {
         .select('id, name, image_url')
         .eq('approved', true)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(3);  // Changed from 5 to 3
       
       if (error) throw error;
       return data;
