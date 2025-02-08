@@ -22,12 +22,13 @@ export const NewProjectsShowcase = () => {
         .select('id, name, image_url')
         .eq('approved', true)
         .order('created_at', { ascending: false })
-        .limit(3);  // Changed from 5 to 3
+        .limit(3);
       
       if (error) throw error;
       return data;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep unused data for 10 minutes
   });
 
   if (isLoading) {

@@ -1,3 +1,4 @@
+
 import { HeroSection } from "@/components/HeroSection";
 import { NewProjectsShowcase } from "@/components/NewProjectsShowcase";
 import { ProjectShowcase } from "@/components/ProjectShowcase";
@@ -6,6 +7,8 @@ import { Footer } from "@/components/Footer";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Suspense } from "react";
+import { LoadingGrid } from "@/components/projects/LoadingGrid";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -15,8 +18,12 @@ const Index = () => {
       <NavBar />
       <div className="pt-16">
         <HeroSection />
-        <NewProjectsShowcase />
-        <ProjectShowcase />
+        <Suspense fallback={<LoadingGrid />}>
+          <NewProjectsShowcase />
+        </Suspense>
+        <Suspense fallback={<LoadingGrid />}>
+          <ProjectShowcase />
+        </Suspense>
         <div id="about-section" className="py-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">

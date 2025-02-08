@@ -11,7 +11,7 @@ import { LoadingGrid } from "./projects/LoadingGrid";
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
-const ITEMS_PER_PAGE = 3; // Changed from 6 to 3
+const ITEMS_PER_PAGE = 3;
 
 export const ProjectShowcase = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -25,12 +25,13 @@ export const ProjectShowcase = () => {
     isFetchingNextPage,
     isLoading
   } = useInfiniteQuery({
-    queryKey: ['projects', selectedCategory],
+    queryKey: ['featured-projects', selectedCategory],
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
       let query = supabase
         .from('projects')
         .select('*')
+        .eq('approved', true)
         .range(
           pageParam * ITEMS_PER_PAGE, 
           (pageParam + 1) * ITEMS_PER_PAGE - 1
@@ -49,6 +50,8 @@ export const ProjectShowcase = () => {
       if (!lastPage || lastPage.length < ITEMS_PER_PAGE) return undefined;
       return allPages.length;
     },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep unused data for 10 minutes
   });
 
   const allProjects = data?.pages.flat() || [];
