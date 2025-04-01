@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -28,7 +29,7 @@ export default defineConfig(({ mode }) => ({
     },
     chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
-    sourcemap: false,
+    sourcemap: true, // Enable sourcemaps for better debugging
     cssCodeSplit: true,
     reportCompressedSize: false,
   },
