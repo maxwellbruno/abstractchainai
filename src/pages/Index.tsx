@@ -6,12 +6,27 @@ import { SubmissionForm } from "@/components/SubmissionForm";
 import { Footer } from "@/components/Footer";
 import { NavBar } from "@/components/NavBar";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { Suspense } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Suspense, useEffect } from "react";
 import { LoadingGrid } from "@/components/projects/LoadingGrid";
 
 const Index = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Handle scrolling to about section when navigating from other pages
+  useEffect(() => {
+    if (location.state && location.state.scrollToAbout) {
+      const aboutSection = document.getElementById('about-section');
+      if (aboutSection) {
+        setTimeout(() => {
+          aboutSection.scrollIntoView({ behavior: 'smooth' });
+        }, 100); // Small timeout to ensure DOM is ready
+      }
+      // Clear the state to prevent scrolling on subsequent renders
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   return (
     <div className="min-h-screen bg-black text-white">

@@ -1,15 +1,25 @@
+
 import { Logo } from "./nav/Logo";
 import { DesktopNav } from "./nav/DesktopNav";
 import { SearchBar } from "./nav/SearchBar";
 import { MobileMenu } from "./nav/MobileMenu";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger } from "./ui/navigation-menu";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export const NavBar = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   const scrollToAbout = () => {
-    const aboutSection = document.getElementById('about-section');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    if (location.pathname === "/") {
+      // If on home page, scroll to about section
+      const aboutSection = document.getElementById('about-section');
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // If on other pages, navigate to home and then scroll
+      navigate('/', { state: { scrollToAbout: true } });
     }
   };
 
@@ -66,6 +76,15 @@ export const NavBar = () => {
                           Learn more about us
                         </p>
                       </button>
+                      <Link
+                        to="/donate"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-card hover:text-white focus:bg-card focus:text-white"
+                      >
+                        <div className="text-sm font-medium leading-none">Donate</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-gray-400">
+                          Support our project
+                        </p>
+                      </Link>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>

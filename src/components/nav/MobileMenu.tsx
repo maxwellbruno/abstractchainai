@@ -1,3 +1,4 @@
+
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,12 @@ export const MobileMenu = ({ scrollToAbout }: MobileMenuProps) => {
           >
             About
           </button>
+          <Link 
+            to="/donate" 
+            className="text-lg text-white hover:text-primary transition-colors"
+          >
+            Donate
+          </Link>
           <div className="mt-4">
             <Input
               type="search"

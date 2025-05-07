@@ -3,9 +3,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="preconnect" href="https://vtjnknpfeonpzlphsraa.supabase.co" />
+    <link rel="preconnect" href="https://vtjnknpfeonpzlphsraa.supabase.co" crossorigin />
     <link rel="dns-prefetch" href="https://vtjnknpfeonpzlphsraa.supabase.co" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>AbstractchainAI</title>
     <meta name="description" content="AI and blockchain project showcase platform" />
     <meta name="author" content="Lovable" />
@@ -17,12 +17,18 @@
     <link rel="preload" as="image" href="/og-image.png" />
     <link rel="modulepreload" href="/src/main.tsx" />
     
-    <!-- Defer non-critical CSS -->
-    <link rel="stylesheet" href="/src/index.css" media="print" onload="this.media='all'" />
+    <!-- Enable styles immediately to prevent FOUC -->
+    <link rel="stylesheet" href="/src/index.css" />
+    
+    <!-- Prevent flash of unstyled content -->
+    <script>
+      // Prevent FOUC by applying styles before DOM loads
+      document.documentElement.classList.add('dark-mode');
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module" async></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

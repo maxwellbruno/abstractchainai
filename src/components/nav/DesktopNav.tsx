@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 
 interface DesktopNavProps {
@@ -18,5 +19,8 @@ export const DesktopNav = ({ scrollToAbout }: DesktopNavProps) => (
     >
       About
     </button>
+    <Link to="/donate" className="text-gray-300 hover:text-primary transition-colors">
+      Donate
+    </Link>
   </div>
 );

@@ -24,13 +24,18 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-toast'],
+          icons: ['lucide-react'],
         },
       },
     },
     chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
-    sourcemap: true, // Enable sourcemaps for better debugging
+    sourcemap: mode === 'development',
     cssCodeSplit: true,
     reportCompressedSize: false,
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: [],
   },
 }));
