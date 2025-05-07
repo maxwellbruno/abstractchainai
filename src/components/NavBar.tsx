@@ -1,9 +1,8 @@
+
 import { Logo } from "./nav/Logo";
 import { DesktopNav } from "./nav/DesktopNav";
 import { SearchBar } from "./nav/SearchBar";
 import { MobileMenu } from "./nav/MobileMenu";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger } from "./ui/navigation-menu";
-import { Link } from "react-router-dom";
 
 export const NavBar = () => {
   const scrollToAbout = () => {
@@ -29,48 +28,6 @@ export const NavBar = () => {
               <SearchBar />
             </div>
             <MobileMenu scrollToAbout={scrollToAbout} />
-
-            {/* Desktop Navigation Menu */}
-            <NavigationMenu className="hidden md:flex">
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-white hover:bg-card hover:text-white">
-                    Menu
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid gap-3 p-4 w-[200px] bg-black border border-gray-800">
-                      <Link
-                        to="/"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-card hover:text-white focus:bg-card focus:text-white"
-                      >
-                        <div className="text-sm font-medium leading-none">Home</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-gray-400">
-                          Return to homepage
-                        </p>
-                      </Link>
-                      <Link
-                        to="/explore"
-                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-card hover:text-white focus:bg-card focus:text-white"
-                      >
-                        <div className="text-sm font-medium leading-none">Projects</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-gray-400">
-                          Browse all projects
-                        </p>
-                      </Link>
-                      <button
-                        onClick={scrollToAbout}
-                        className="block w-full text-left select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-card hover:text-white focus:bg-card focus:text-white"
-                      >
-                        <div className="text-sm font-medium leading-none">About</div>
-                        <p className="line-clamp-2 text-sm leading-snug text-gray-400">
-                          Learn more about us
-                        </p>
-                      </button>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
           </div>
         </div>
       </div>
