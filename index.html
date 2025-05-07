@@ -17,12 +17,11 @@
     <link rel="preload" as="image" href="/og-image.png" />
     <link rel="modulepreload" href="/src/main.tsx" />
     
-    <!-- Defer non-critical CSS -->
-    <link rel="stylesheet" href="/src/index.css" media="print" onload="this.media='all'" />
+    <!-- Load critical CSS immediately -->
+    <link rel="stylesheet" href="/src/index.css" />
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
