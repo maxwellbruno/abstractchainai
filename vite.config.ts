@@ -29,12 +29,8 @@ export default defineConfig(({ mode }) => ({
     },
     chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
-    sourcemap: false, // Disable sourcemaps in production for better performance
+    sourcemap: true, // Enable sourcemaps for better debugging
     cssCodeSplit: true,
     reportCompressedSize: false,
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-    exclude: [],
   },
 }));
