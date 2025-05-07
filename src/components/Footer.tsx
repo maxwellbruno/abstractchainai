@@ -1,8 +1,11 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Twitter, Github } from "lucide-react";
 
 export const Footer = () => {
   const { toast } = useToast();
@@ -36,6 +39,13 @@ export const Footer = () => {
     }
   };
 
+  const scrollToSubmissionForm = () => {
+    const submissionForm = document.getElementById('submission-form');
+    if (submissionForm) {
+      submissionForm.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="bg-card mt-20 py-16 px-4">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -46,17 +56,36 @@ export const Footer = () => {
         <div className="space-y-4">
           <h4 className="text-lg font-semibold">Quick Links</h4>
           <ul className="space-y-2">
-            <li><a href="#" className="text-gray-400 hover:text-primary">About Us</a></li>
-            <li><a href="#" className="text-gray-400 hover:text-primary">Projects</a></li>
-            <li><a href="#" className="text-gray-400 hover:text-primary">Submit Project</a></li>
+            <li><a href="#about-section" className="text-gray-400 hover:text-primary">About Us</a></li>
+            <li><Link to="/explore" className="text-gray-400 hover:text-primary">Projects</Link></li>
+            <li><a href="#submission-form" onClick={scrollToSubmissionForm} className="text-gray-400 hover:text-primary">Submit Project</a></li>
           </ul>
         </div>
         <div className="space-y-4">
           <h4 className="text-lg font-semibold">Connect</h4>
           <ul className="space-y-2">
-            <li><a href="#" className="text-gray-400 hover:text-primary">Twitter</a></li>
-            <li><a href="#" className="text-gray-400 hover:text-primary">Discord</a></li>
-            <li><a href="#" className="text-gray-400 hover:text-primary">GitHub</a></li>
+            <li>
+              <a 
+                href="https://x.com/AIonAbstract" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-400 hover:text-primary flex items-center gap-2"
+              >
+                <Twitter className="h-4 w-4" />
+                Twitter
+              </a>
+            </li>
+            <li>
+              <a 
+                href="https://github.com/maxwellbruno/abstractchainai" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-primary flex items-center gap-2"
+              >
+                <Github className="h-4 w-4" />
+                GitHub
+              </a>
+            </li>
           </ul>
         </div>
         <div className="space-y-4">
