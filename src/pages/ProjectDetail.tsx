@@ -1,6 +1,8 @@
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { NavBar } from '@/components/NavBar';
+import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
@@ -56,6 +58,7 @@ const ProjectDetail = () => {
             <Skeleton className="h-12 w-40" />
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -76,6 +79,7 @@ const ProjectDetail = () => {
             </Button>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -116,6 +120,7 @@ const ProjectDetail = () => {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

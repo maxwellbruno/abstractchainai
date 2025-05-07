@@ -4,13 +4,14 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Twitter, Github } from "lucide-react";
 
 export const Footer = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const location = useLocation();
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,9 +41,12 @@ export const Footer = () => {
   };
 
   const scrollToSubmissionForm = () => {
-    const submissionForm = document.getElementById('submission-form');
-    if (submissionForm) {
-      submissionForm.scrollIntoView({ behavior: 'smooth' });
+    // Check if we're on the home page before trying to scroll
+    if (location.pathname === "/") {
+      const submissionForm = document.getElementById('submission-form');
+      if (submissionForm) {
+        submissionForm.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -56,9 +60,17 @@ export const Footer = () => {
         <div className="space-y-4">
           <h4 className="text-lg font-semibold">Quick Links</h4>
           <ul className="space-y-2">
-            <li><a href="#about-section" className="text-gray-400 hover:text-primary">About Us</a></li>
+            {location.pathname === "/" ? (
+              <li><a href="#about-section" className="text-gray-400 hover:text-primary">About Us</a></li>
+            ) : (
+              <li><Link to="/#about-section" className="text-gray-400 hover:text-primary">About Us</Link></li>
+            )}
             <li><Link to="/explore" className="text-gray-400 hover:text-primary">Projects</Link></li>
-            <li><a href="#submission-form" onClick={scrollToSubmissionForm} className="text-gray-400 hover:text-primary">Submit Project</a></li>
+            {location.pathname === "/" ? (
+              <li><a href="#submission-form" onClick={scrollToSubmissionForm} className="text-gray-400 hover:text-primary">Submit Project</a></li>
+            ) : (
+              <li><Link to="/#submission-form" className="text-gray-400 hover:text-primary">Submit Project</Link></li>
+            )}
           </ul>
         </div>
         <div className="space-y-4">
