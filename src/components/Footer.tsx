@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Twitter, Github } from "lucide-react";
+import { Twitter, Github, Mail } from "lucide-react";
 
 export const Footer = () => {
   const { toast } = useToast();
@@ -14,6 +14,18 @@ export const Footer = () => {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubscribing(true);
 
     try {
@@ -21,17 +33,28 @@ export const Footer = () => {
         .from('newsletter_subscribers')
         .insert([{ email }]);
 
-      if (error) throw error;
-
-      toast({
-        title: "Subscribed!",
-        description: "Thank you for subscribing to our newsletter.",
-      });
-      setEmail("");
+      if (error) {
+        // Check if error is due to duplicate email
+        if (error.code === '23505') {
+          toast({
+            title: "Already subscribed",
+            description: "This email is already subscribed to our newsletter.",
+          });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({
+          title: "Subscribed!",
+          description: "Thank you for subscribing to our newsletter.",
+        });
+        setEmail("");
+      }
     } catch (error) {
+      console.error("Newsletter subscription error:", error);
       toast({
         title: "Error",
-        description: "Failed to subscribe. Please try again.",
+        description: "Failed to subscribe. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -86,10 +109,20 @@ export const Footer = () => {
                 GitHub
               </a>
             </li>
+            <li>
+              <a 
+                href="mailto:contact@abstractchainai.com" 
+                className="text-gray-400 hover:text-primary flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                Email Us
+              </a>
+            </li>
           </ul>
         </div>
         <div className="space-y-4">
           <h4 className="text-lg font-semibold">Newsletter</h4>
+          <p className="text-gray-400 text-sm">Subscribe to receive updates on new projects and features.</p>
           <form onSubmit={handleSubscribe} className="space-y-2">
             <Input
               type="email"
