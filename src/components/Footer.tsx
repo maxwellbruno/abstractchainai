@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
@@ -5,37 +6,43 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Twitter, Github, Mail } from "lucide-react";
-import DOMPurify from "dompurify";
+import { sanitizeHtml, validateEmail, RateLimiter } from "@/utils/security";
+import { toast } from "sonner";
 
 export const Footer = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [isSubscribing, setIsSubscribing] = useState(false);
-  const [submissionCount, setSubmissionCount] = useState(0);
-  const [lastSubmissionTime, setLastSubmissionTime] = useState(0);
+  const [csrfToken, setCsrfToken] = useState("");
 
-  // Load rate limiting data from localStorage
+  // Create a rate limiter instance
+  const rateLimiter = new RateLimiter(3, 3600000); // 3 attempts per hour
+
+  // Generate CSRF token on component mount
   useEffect(() => {
-    const storedCount = localStorage.getItem('newsletter_submission_count');
-    const storedTime = localStorage.getItem('newsletter_last_submission');
-    
-    if (storedCount) setSubmissionCount(parseInt(storedCount, 10));
-    if (storedTime) setLastSubmissionTime(parseInt(storedTime, 10));
-    
-    // Reset count if it's been more than an hour
-    if (Date.now() - lastSubmissionTime > 3600000) {
-      setSubmissionCount(0);
-      localStorage.removeItem('newsletter_submission_count');
-      localStorage.removeItem('newsletter_last_submission');
-    }
-  }, [lastSubmissionTime]);
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    const token = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    setCsrfToken(token);
+    sessionStorage.setItem('newsletter_csrf', token);
+  }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic email validation with more comprehensive regex
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    if (!emailRegex.test(email)) {
+    // Validate CSRF token
+    const storedToken = sessionStorage.getItem('newsletter_csrf');
+    if (storedToken !== csrfToken) {
+      toast({
+        title: "Security error",
+        description: "Please refresh the page and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Email validation with our security utility
+    if (!validateEmail(email)) {
       toast({
         title: "Invalid email",
         description: "Please enter a valid email address.",
@@ -44,12 +51,13 @@ export const Footer = () => {
       return;
     }
     
-    // Rate limiting - max 3 attempts per hour
-    const currentTime = Date.now();
-    if (submissionCount >= 3 && currentTime - lastSubmissionTime < 3600000) {
+    // Check rate limiting
+    const clientIp = 'client'; // In a real app, you'd use the client IP
+    if (rateLimiter.isRateLimited(clientIp)) {
+      const timeUntilReset = Math.ceil(rateLimiter.getTimeUntilReset(clientIp) / 60000);
       toast({
         title: "Too many attempts",
-        description: "Please try again later.",
+        description: `Please try again in approximately ${timeUntilReset} minutes.`,
         variant: "destructive",
       });
       return;
@@ -59,7 +67,7 @@ export const Footer = () => {
 
     try {
       // Sanitize the email input
-      const sanitizedEmail = DOMPurify.sanitize(email).trim().toLowerCase();
+      const sanitizedEmail = sanitizeHtml(email).trim().toLowerCase();
       
       const { error } = await supabase
         .from('newsletter_subscribers')
@@ -73,21 +81,22 @@ export const Footer = () => {
             description: "This email is already subscribed to our newsletter.",
           });
         } else {
+          console.error("Newsletter subscription database error:", error);
           throw error;
         }
       } else {
+        // Generate a new CSRF token after successful submission
+        const array = new Uint8Array(16);
+        crypto.getRandomValues(array);
+        const newToken = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+        setCsrfToken(newToken);
+        sessionStorage.setItem('newsletter_csrf', newToken);
+
         toast({
           title: "Subscribed!",
           description: "Thank you for subscribing to our newsletter.",
         });
         setEmail("");
-        
-        // Update rate limiting data
-        const newCount = submissionCount + 1;
-        setSubmissionCount(newCount);
-        setLastSubmissionTime(currentTime);
-        localStorage.setItem('newsletter_submission_count', newCount.toString());
-        localStorage.setItem('newsletter_last_submission', currentTime.toString());
       }
     } catch (error) {
       console.error("Newsletter subscription error:", error);
@@ -169,12 +178,15 @@ export const Footer = () => {
               className="bg-black border-gray-800 focus:border-primary"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              aria-label="Email for newsletter"
               required
             />
+            <input type="hidden" name="csrf_token" value={csrfToken} />
             <Button 
               type="submit"
               className="w-full bg-primary hover:bg-primary-hover text-black"
               disabled={isSubscribing}
+              aria-label="Subscribe to newsletter"
             >
               {isSubscribing ? "Subscribing..." : "Subscribe"}
             </Button>
