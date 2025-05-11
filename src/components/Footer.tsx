@@ -1,22 +1,40 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Twitter, Github, Mail } from "lucide-react";
+import DOMPurify from "dompurify";
 
 export const Footer = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [submissionCount, setSubmissionCount] = useState(0);
+  const [lastSubmissionTime, setLastSubmissionTime] = useState(0);
+
+  // Load rate limiting data from localStorage
+  useEffect(() => {
+    const storedCount = localStorage.getItem('newsletter_submission_count');
+    const storedTime = localStorage.getItem('newsletter_last_submission');
+    
+    if (storedCount) setSubmissionCount(parseInt(storedCount, 10));
+    if (storedTime) setLastSubmissionTime(parseInt(storedTime, 10));
+    
+    // Reset count if it's been more than an hour
+    if (Date.now() - lastSubmissionTime > 3600000) {
+      setSubmissionCount(0);
+      localStorage.removeItem('newsletter_submission_count');
+      localStorage.removeItem('newsletter_last_submission');
+    }
+  }, [lastSubmissionTime]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Basic email validation with more comprehensive regex
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     if (!emailRegex.test(email)) {
       toast({
         title: "Invalid email",
@@ -26,12 +44,26 @@ export const Footer = () => {
       return;
     }
     
+    // Rate limiting - max 3 attempts per hour
+    const currentTime = Date.now();
+    if (submissionCount >= 3 && currentTime - lastSubmissionTime < 3600000) {
+      toast({
+        title: "Too many attempts",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubscribing(true);
 
     try {
+      // Sanitize the email input
+      const sanitizedEmail = DOMPurify.sanitize(email).trim().toLowerCase();
+      
       const { error } = await supabase
         .from('newsletter_subscribers')
-        .insert([{ email }]);
+        .insert([{ email: sanitizedEmail }]);
 
       if (error) {
         // Check if error is due to duplicate email
@@ -49,6 +81,13 @@ export const Footer = () => {
           description: "Thank you for subscribing to our newsletter.",
         });
         setEmail("");
+        
+        // Update rate limiting data
+        const newCount = submissionCount + 1;
+        setSubmissionCount(newCount);
+        setLastSubmissionTime(currentTime);
+        localStorage.setItem('newsletter_submission_count', newCount.toString());
+        localStorage.setItem('newsletter_last_submission', currentTime.toString());
       }
     } catch (error) {
       console.error("Newsletter subscription error:", error);
@@ -140,6 +179,7 @@ export const Footer = () => {
               {isSubscribing ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
+          <p className="text-xs text-gray-500">We respect your privacy. Unsubscribe at any time.</p>
         </div>
       </div>
     </footer>

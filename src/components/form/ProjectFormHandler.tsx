@@ -1,9 +1,11 @@
+
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjectForm } from "@/hooks/useProjectForm";
 import { uploadProjectImage } from "@/services/imageUpload";
 import { submitProject } from "@/services/projectSubmission";
 import { ProjectFormData } from "@/types/project";
+import DOMPurify from "dompurify";
 
 interface ProjectFormHandlerProps {
   children: (props: {
@@ -31,10 +33,31 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Enhanced validation
     if (!formData.name || !formData.description || !formData.category) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Name length validation
+    if (formData.name.length < 3 || formData.name.length > 100) {
+      toast({
+        title: "Invalid Project Name",
+        description: "Project name must be between 3 and 100 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Description length validation
+    if (formData.description.length < 10 || formData.description.length > 5000) {
+      toast({
+        title: "Invalid Description",
+        description: "Description must be between 10 and 5000 characters",
         variant: "destructive",
       });
       return;
@@ -58,9 +81,44 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
       return;
     }
 
+    // Website URL validation if provided
+    if (formData.website) {
+      try {
+        new URL(formData.website);
+      } catch (e) {
+        toast({
+          title: "Invalid Website URL",
+          description: "Please enter a valid URL (include https://)",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
+      // Rate limiting check - would be better implemented on the backend
+      const submissionKey = 'last_project_submission';
+      const lastSubmission = localStorage.getItem(submissionKey);
+      
+      if (lastSubmission) {
+        const lastSubmitTime = parseInt(lastSubmission, 10);
+        const currentTime = Date.now();
+        const timeDiff = currentTime - lastSubmitTime;
+        
+        // Limit to one submission every 60 seconds
+        if (timeDiff < 60000) {
+          toast({
+            title: "Rate Limited",
+            description: "Please wait before submitting another project",
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+      
       let image_url = null;
       
       try {
@@ -76,16 +134,38 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
         return;
       }
 
+      // Sanitize input data
+      const sanitizedData = {
+        ...formData,
+        name: DOMPurify.sanitize(formData.name),
+        description: DOMPurify.sanitize(formData.description),
+        website: formData.website ? DOMPurify.sanitize(formData.website) : null,
+        features: DOMPurify.sanitize(formData.features),
+      };
+
       const { data: { user } } = await supabase.auth.getUser();
 
+      if (!user) {
+        toast({
+          title: "Authentication Error",
+          description: "You must be logged in to submit a project",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const projectData = {
-        ...formData,
+        ...sanitizedData,
         image_url,
-        user_id: user?.id || null,
+        user_id: user.id,
         approved: false,
       };
 
       await submitProject(projectData);
+      
+      // Record the submission time for rate limiting
+      localStorage.setItem(submissionKey, Date.now().toString());
 
       toast({
         title: "Success!",
