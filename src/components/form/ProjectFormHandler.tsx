@@ -1,13 +1,11 @@
-
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjectForm } from "@/hooks/useProjectForm";
 import { uploadProjectImage } from "@/services/imageUpload";
 import { submitProject } from "@/services/projectSubmission";
 import { ProjectFormData } from "@/types/project";
-import DOMPurify from "dompurify";
 import { useState, useEffect } from "react";
-import { detectSuspiciousActivity, evaluatePasswordStrength } from "@/utils/security";
+import { detectSuspiciousActivity, sanitizeHtml } from "@/utils/security";
 
 interface ProjectFormHandlerProps {
   children: (props: {
@@ -159,10 +157,10 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
       // Enhanced input sanitization with strict settings
       const sanitizedData = {
         ...formData,
-        name: DOMPurify.sanitize(formData.name, {USE_PROFILES: {html: false}}),
-        description: DOMPurify.sanitize(formData.description, {USE_PROFILES: {html: true}}),
-        website: formData.website ? DOMPurify.sanitize(formData.website, {USE_PROFILES: {html: false}}) : null,
-        features: DOMPurify.sanitize(formData.features, {USE_PROFILES: {html: false}}),
+        name: sanitizeHtml(formData.name),
+        description: sanitizeHtml(formData.description),
+        website: formData.website ? sanitizeHtml(formData.website) : null,
+        features: sanitizeHtml(formData.features),
       };
 
       // Check authentication state with enhanced session validation

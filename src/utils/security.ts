@@ -1,4 +1,3 @@
-
 import DOMPurify from "dompurify";
 
 /**
@@ -20,6 +19,8 @@ const configureDOMPurify = () => {
     FORBID_CONTENTS: ['script', 'style'],
     ADD_ATTR: ['target'], // allow target="_blank" for links
     ADD_URI_SAFE_ATTR: [],
+    // Remove prototype pollution vulnerability - set USE_PROFILES explicitly
+    USE_PROFILES: { html: true },
   });
 
   // Hook to force all links to open in a new tab and have noopener/noreferrer
@@ -28,18 +29,27 @@ const configureDOMPurify = () => {
       node.setAttribute('target', '_blank');
       node.setAttribute('rel', 'noopener noreferrer');
     }
+    // Remove __proto__ and constructor references to prevent prototype pollution
+    if (node.hasAttribute('__proto__') || node.hasAttribute('constructor')) {
+      node.removeAttribute('__proto__');
+      node.removeAttribute('constructor');
+    }
   });
 };
 
-// Initialize DOMPurify
+// Initialize DOMPurify with secure configuration
 configureDOMPurify();
 
 /**
  * Sanitizes HTML to prevent XSS attacks
+ * Uses explicit configuration to prevent nesting-based attacks
  */
 export const sanitizeHtml = (html: string): string => {
   return DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true },
+    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'],
+    WHOLE_DOCUMENT: false,
+    SANITIZE_DOM: true
   });
 };
 
@@ -249,7 +259,7 @@ export const getDeviceFingerprint = async (): Promise<string> => {
     screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
     navigator.hardwareConcurrency || '',
     navigator.platform || ''
-    // Removed deviceMemory as it's not supported in all browsers and causes TS error
+    // Removed deviceMemory as it's not supported in all browsers
   ];
   
   // Use SubtleCrypto for secure hashing

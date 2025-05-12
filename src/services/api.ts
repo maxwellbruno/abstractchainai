@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import DOMPurify from "dompurify";
+import { sanitizeHtml } from "@/utils/security";
 
 interface ApiError {
   message: string;
@@ -44,7 +44,7 @@ export const sanitizeData = <T>(data: T): T => {
   if (!data) return data;
   
   if (typeof data === 'string') {
-    return DOMPurify.sanitize(data) as unknown as T;
+    return sanitizeHtml(data) as unknown as T;
   }
   
   if (Array.isArray(data)) {
@@ -55,7 +55,10 @@ export const sanitizeData = <T>(data: T): T => {
     const sanitizedData: Record<string, any> = {};
     
     Object.entries(data).forEach(([key, value]) => {
-      sanitizedData[key] = sanitizeData(value);
+      // Skip __proto__ and constructor to prevent prototype pollution
+      if (key !== '__proto__' && key !== 'constructor') {
+        sanitizedData[key] = sanitizeData(value);
+      }
     });
     
     return sanitizedData as T;

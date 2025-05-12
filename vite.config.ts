@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -7,22 +8,27 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
-    // Add historyApiFallback to handle client-side routing
     middlewareMode: false,
-    // Improved security that still allows proper connection
     fs: {
-      // Allow serving from project directory
-      allow: [path.resolve(__dirname, '.')],
-      // Still deny sensitive directories
-      deny: ['.git', '.env'],
-      // Use moderate strictness
-      strict: false
+      // Strict allowlist approach with absolute paths
+      strict: true,
+      // Only allow access to the specific project directory, not parent directories
+      allow: [path.resolve(__dirname)],
+      // Explicitly deny access to sensitive directories
+      deny: [
+        '.git', 
+        '.env', 
+        'node_modules/.cache',
+        '**/node_modules/**/node_modules'
+      ]
     },
-    // Allow CORS for development
-    cors: true,
-    // Set security headers but allow embedding for development
+    // Restrict CORS for production, but allow for development
+    cors: mode === 'development',
+    // Apply security headers
     headers: {
       'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': mode === 'development' ? 'SAMEORIGIN' : 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
     }
   },
   plugins: [
