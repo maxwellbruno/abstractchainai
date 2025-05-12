@@ -44,7 +44,8 @@ export const ProjectShowcase = () => {
       
       const { data, error } = await query;
       if (error) throw error;
-      return data as Project[];
+      // Fix by properly casting the result to match the expected type
+      return data as unknown as Project[];
     },
     getNextPageParam: (lastPage, allPages) => {
       if (!lastPage || lastPage.length < ITEMS_PER_PAGE) return undefined;

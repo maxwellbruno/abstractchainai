@@ -28,7 +28,8 @@ export const NewProjectsShowcase = () => {
         .limit(3);
       
       if (error) throw error;
-      return data as Project[];
+      // Fix by properly casting the result to match the expected type
+      return data as unknown as Project[];
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep unused data for 10 minutes
