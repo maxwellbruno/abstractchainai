@@ -18,12 +18,7 @@ export const supabase = createClient<Database>(
       storage: localStorage,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      debug: false,
-      cookieOptions: {
-        sameSite: 'strict',
-        secure: true,
-        httpOnly: true
-      }
+      debug: false
     },
     global: {
       headers: {

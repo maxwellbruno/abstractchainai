@@ -5,15 +5,13 @@ import { handleApiError, sanitizeData } from "./api";
 import { toast } from "sonner";
 import { Database } from "@/integrations/supabase/types";
 
-type ProjectInsert = Database['public']['Tables']['projects']['Insert'];
-
 /**
  * Submits a project with enhanced security
  */
 export const submitProject = async (projectData: ProjectSubmissionData) => {
   try {
     // Sanitize input data to prevent XSS
-    const sanitizedData = sanitizeData(projectData) as ProjectInsert;
+    const sanitizedData = sanitizeData(projectData);
     
     // Check authentication
     const { data: { user } } = await supabase.auth.getUser();
@@ -22,6 +20,7 @@ export const submitProject = async (projectData: ProjectSubmissionData) => {
     }
     
     // Attempt project insertion with logging
+    // Fix: Remove explicit type casting that was causing errors
     const { error: insertError } = await supabase
       .from('projects')
       .insert(sanitizedData);

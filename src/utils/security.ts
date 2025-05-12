@@ -1,4 +1,3 @@
-
 import DOMPurify from "dompurify";
 
 /**
@@ -248,7 +247,6 @@ export const getDeviceFingerprint = async (): Promise<string> => {
     new Date().getTimezoneOffset(),
     screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
     navigator.hardwareConcurrency || '',
-    navigator.deviceMemory || '',
     navigator.platform || ''
   ];
   

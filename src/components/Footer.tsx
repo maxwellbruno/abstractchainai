@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
@@ -70,12 +69,10 @@ export const Footer = () => {
       // Sanitize the email input
       const sanitizedEmail = sanitizeHtml(email).trim().toLowerCase();
       
-      // Fixed: Properly type the insert data according to the database schema
+      // Fix: Use the simple object approach without explicit type casting
       const { error } = await supabase
         .from('newsletter_subscribers')
-        .insert({ 
-          email: sanitizedEmail 
-        } as Database['public']['Tables']['newsletter_subscribers']['Insert']);
+        .insert({ email: sanitizedEmail });
 
       if (error) {
         // Check if error is due to duplicate email

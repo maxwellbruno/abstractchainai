@@ -42,7 +42,8 @@ const ProjectDetail = () => {
         return null;
       }
       
-      return data as Project;
+      // Fix: Add proper type casting to handle the Supabase result
+      return data as unknown as Project;
     },
   });
 
