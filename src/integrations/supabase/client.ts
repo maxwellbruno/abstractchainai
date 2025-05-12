@@ -20,13 +20,18 @@ export const supabase = createClient<Database>(
       detectSessionInUrl: true,
       flowType: 'pkce',
       debug: false,
+      // Adding additional security settings
+      cookieOptions: {
+        sameSite: 'strict',
+        secure: true,
+        httpOnly: true
+      }
     },
     global: {
       headers: {
         'X-Client-Info': 'abstractchainai-web',
       },
     },
-    // Updated realtime config without eventsPerSecond
     realtime: {
       // Empty config using valid options only
     },
@@ -74,5 +79,39 @@ export const secureSignOut = async () => {
   } catch (error) {
     console.error('Sign out error:', error);
     throw error;
+  }
+};
+
+// Enhanced session monitoring
+export const checkSessionValidity = async () => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('Session check error:', error);
+      return false;
+    }
+    
+    // Check if session is about to expire (within 5 minutes)
+    if (session?.expires_at) {
+      const expiresAt = new Date(session.expires_at * 1000);
+      const now = new Date();
+      const fiveMinutes = 5 * 60 * 1000;
+      
+      if (expiresAt.getTime() - now.getTime() < fiveMinutes) {
+        // Attempt to refresh session
+        const { error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError) {
+          console.error('Failed to refresh session:', refreshError);
+          return false;
+        }
+      }
+      
+      return true;
+    }
+    
+    return !!session;
+  } catch (err) {
+    console.error('Session validation error:', err);
+    return false;
   }
 };

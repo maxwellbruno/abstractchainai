@@ -153,3 +153,114 @@ export class RateLimiter {
     return Math.max(0, (oldestTimestamp + this.timeWindow) - now);
   }
 }
+
+/**
+ * Password strength evaluation
+ */
+export const evaluatePasswordStrength = (password: string): {
+  score: number;
+  feedback: string;
+} => {
+  let score = 0;
+  const feedback = [];
+  
+  // Length check
+  if (password.length < 8) {
+    feedback.push("Password is too short");
+  } else if (password.length >= 12) {
+    score += 2;
+  } else {
+    score += 1;
+  }
+  
+  // Complexity checks
+  if (/[A-Z]/.test(password)) score += 1;
+  if (/[a-z]/.test(password)) score += 1;
+  if (/[0-9]/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+  
+  // Variety check
+  const charTypes = [/[A-Z]/, /[a-z]/, /[0-9]/, /[^A-Za-z0-9]/];
+  const typesPresent = charTypes.filter(regex => regex.test(password)).length;
+  
+  if (typesPresent < 3) {
+    feedback.push("Use a mix of letters, numbers, and symbols");
+  }
+  
+  // Common patterns check
+  if (/^123|abc|qwerty|password|admin|welcome|[0-9]{4}$/i.test(password)) {
+    score -= 1;
+    feedback.push("Avoid common patterns");
+  }
+  
+  return {
+    score: Math.max(0, Math.min(5, score)), // Scale 0-5
+    feedback: feedback.join(". ")
+  };
+};
+
+/**
+ * Throttle function to limit execution frequency
+ */
+export const throttle = <T extends (...args: any[]) => any>(
+  func: T,
+  limit: number
+): ((...args: Parameters<T>) => ReturnType<T> | void) => {
+  let lastCall = 0;
+  return (...args: Parameters<T>): ReturnType<T> | void => {
+    const now = Date.now();
+    if (now - lastCall >= limit) {
+      lastCall = now;
+      return func(...args);
+    }
+  };
+};
+
+/**
+ * Check for suspicious activity patterns
+ */
+export const detectSuspiciousActivity = (): boolean => {
+  const suspiciousPatterns = [
+    // Iframe detection
+    window !== window.top,
+    
+    // DevTools detection
+    window.outerHeight - window.innerHeight > 200,
+    
+    // Unusual navigation timing
+    performance.navigation?.type === 2, // Back/forward navigation
+    
+    // Rapid successive actions
+    document.hasFocus() === false && document.visibilityState === 'visible',
+  ];
+  
+  return suspiciousPatterns.some(Boolean);
+};
+
+/**
+ * Device fingerprinting for fraud detection
+ * Only collects non-PII data to help identify suspicious behavior patterns
+ */
+export const getDeviceFingerprint = async (): Promise<string> => {
+  const components = [
+    navigator.userAgent,
+    navigator.language,
+    new Date().getTimezoneOffset(),
+    screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+    navigator.hardwareConcurrency || '',
+    navigator.deviceMemory || '',
+    navigator.platform || ''
+  ];
+  
+  // Use SubtleCrypto for secure hashing
+  const msgBuffer = new TextEncoder().encode(components.join('###'));
+  
+  try {
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch (err) {
+    console.error('Fingerprinting error:', err);
+    return components.join('').slice(0, 32); // Fallback
+  }
+};

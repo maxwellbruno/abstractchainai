@@ -4,9 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CookieConsent } from "@/components/CookieConsent";
+import { checkSessionValidity } from "@/integrations/supabase/client";
 
 // Use lowercase "index" for import to match the file name
 const Index = lazy(() => import("./pages/index"));
@@ -35,22 +36,41 @@ const queryClient = new QueryClient({
   },
 });
 
+const AppWithSecurity = () => {
+  // Check session validity periodically
+  useEffect(() => {
+    // Initial check
+    checkSessionValidity();
+    
+    // Check every 5 minutes
+    const interval = setInterval(() => {
+      checkSessionValidity();
+    }, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/project/:id" element={<ProjectDetail />} />
+        </Routes>
+      </Suspense>
+      <CookieConsent />
+    </BrowserRouter>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/donate" element={<Donate />} />
-            <Route path="/project/:id" element={<ProjectDetail />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-      <CookieConsent />
+      <AppWithSecurity />
     </TooltipProvider>
   </QueryClientProvider>
 );

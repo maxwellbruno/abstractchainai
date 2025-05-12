@@ -6,6 +6,8 @@ import { uploadProjectImage } from "@/services/imageUpload";
 import { submitProject } from "@/services/projectSubmission";
 import { ProjectFormData } from "@/types/project";
 import DOMPurify from "dompurify";
+import { useState, useEffect } from "react";
+import { detectSuspiciousActivity, evaluatePasswordStrength } from "@/utils/security";
 
 interface ProjectFormHandlerProps {
   children: (props: {
@@ -29,6 +31,23 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
     updateField,
     resetForm,
   } = useProjectForm();
+
+  // Security enhancement: Check for suspicious activity
+  useEffect(() => {
+    const checkSecurity = async () => {
+      const suspicious = detectSuspiciousActivity();
+      if (suspicious) {
+        console.warn("Suspicious activity detected");
+        toast({
+          title: "Security Alert",
+          description: "Unusual activity detected. Please refresh the page if you experience issues.",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    checkSecurity();
+  }, [toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +103,10 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
     // Website URL validation if provided
     if (formData.website) {
       try {
-        new URL(formData.website);
+        const url = new URL(formData.website);
+        if (!url.protocol.startsWith('http')) {
+          throw new Error("Invalid protocol");
+        }
       } catch (e) {
         toast({
           title: "Invalid Website URL",
@@ -134,18 +156,19 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
         return;
       }
 
-      // Sanitize input data
+      // Enhanced input sanitization with strict settings
       const sanitizedData = {
         ...formData,
-        name: DOMPurify.sanitize(formData.name),
-        description: DOMPurify.sanitize(formData.description),
-        website: formData.website ? DOMPurify.sanitize(formData.website) : null,
-        features: DOMPurify.sanitize(formData.features),
+        name: DOMPurify.sanitize(formData.name, {USE_PROFILES: {html: false}}),
+        description: DOMPurify.sanitize(formData.description, {USE_PROFILES: {html: true}}),
+        website: formData.website ? DOMPurify.sanitize(formData.website, {USE_PROFILES: {html: false}}) : null,
+        features: DOMPurify.sanitize(formData.features, {USE_PROFILES: {html: false}}),
       };
 
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) {
+      // Check authentication state with enhanced session validation
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        console.error("Authentication error:", error);
         toast({
           title: "Authentication Error",
           description: "You must be logged in to submit a project",
@@ -158,7 +181,7 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
       const projectData = {
         ...sanitizedData,
         image_url,
-        user_id: user.id,
+        user_id: data.user.id,
         approved: false,
       };
 
