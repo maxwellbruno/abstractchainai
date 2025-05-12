@@ -10,6 +10,24 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     // Add historyApiFallback to handle client-side routing
     middlewareMode: false,
+    // Improve security for development server
+    fs: {
+      // Strict allow list of directories that can be served via the dev server
+      allow: [path.resolve(__dirname, '.')],
+      // Explicitly deny access to certain directories
+      deny: ['.git', '.env', 'node_modules/.cache'],
+      // Strict mode to prevent escaping the allow list
+      strict: true
+    },
+    // Prevent CORS from allowing other origins to access your dev server
+    cors: {
+      origin: false
+    },
+    // Prevents other websites from embedding your site in iframes
+    headers: {
+      'X-Frame-Options': 'DENY',
+      'Content-Security-Policy': "frame-ancestors 'none'",
+    }
   },
   plugins: [
     react(),
@@ -40,7 +58,7 @@ export default defineConfig(({ mode }) => ({
     include: ['react', 'react-dom', 'react-router-dom', 'dompurify'],
     exclude: [],
   },
-  // Enhanced security headers
+  // Enhanced security headers for production preview
   preview: {
     headers: {
       'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: https://*.supabase.co blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests;",

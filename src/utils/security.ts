@@ -1,3 +1,4 @@
+
 import DOMPurify from "dompurify";
 
 /**
@@ -248,6 +249,7 @@ export const getDeviceFingerprint = async (): Promise<string> => {
     screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
     navigator.hardwareConcurrency || '',
     navigator.platform || ''
+    // Removed deviceMemory as it's not supported in all browsers and causes TS error
   ];
   
   // Use SubtleCrypto for secure hashing
