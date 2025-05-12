@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/carousel";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Database } from "@/integrations/supabase/types";
+
+type Project = Database['public']['Tables']['projects']['Row'];
 
 export const NewProjectsShowcase = () => {
   const navigate = useNavigate();
@@ -20,12 +23,12 @@ export const NewProjectsShowcase = () => {
       const { data, error } = await supabase
         .from('projects')
         .select('id, name, image_url')
-        .eq('approved', true)
+        .eq('approved', true as any) // Using type assertion to fix the TS error
         .order('created_at', { ascending: false })
         .limit(3);
       
       if (error) throw error;
-      return data;
+      return data as Project[];
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep unused data for 10 minutes
@@ -50,6 +53,9 @@ export const NewProjectsShowcase = () => {
     );
   }
 
+  // Ensure projects is an array before mapping
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
   return (
     <div className="py-20 px-4">
       <h2 className="text-3xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
@@ -59,7 +65,7 @@ export const NewProjectsShowcase = () => {
       <div className="max-w-5xl mx-auto">
         <Carousel className="w-full">
           <CarouselContent>
-            {projects?.map((project) => (
+            {safeProjects.map((project) => (
               <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/3">
                 <div 
                   className="mx-2 cursor-pointer group h-[360px]"

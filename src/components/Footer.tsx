@@ -69,9 +69,10 @@ export const Footer = () => {
       // Sanitize the email input
       const sanitizedEmail = sanitizeHtml(email).trim().toLowerCase();
       
+      // Fixed: Using a single object instead of an array of objects for insert
       const { error } = await supabase
         .from('newsletter_subscribers')
-        .insert([{ email: sanitizedEmail }]);
+        .insert({ email: sanitizedEmail });
 
       if (error) {
         // Check if error is due to duplicate email

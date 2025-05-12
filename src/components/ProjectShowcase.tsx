@@ -31,7 +31,7 @@ export const ProjectShowcase = () => {
       let query = supabase
         .from('projects')
         .select('*')
-        .eq('approved', true)
+        .eq('approved', true as any) // Using type assertion to fix the TS error
         .range(
           pageParam * ITEMS_PER_PAGE, 
           (pageParam + 1) * ITEMS_PER_PAGE - 1
@@ -39,7 +39,7 @@ export const ProjectShowcase = () => {
         .order('created_at', { ascending: false });
       
       if (selectedCategory) {
-        query = query.eq('category', selectedCategory);
+        query = query.eq('category', selectedCategory as any); // Using type assertion to fix the TS error
       }
       
       const { data, error } = await query;
