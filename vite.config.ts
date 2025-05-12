@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -10,23 +9,20 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     // Add historyApiFallback to handle client-side routing
     middlewareMode: false,
-    // Improve security for development server
+    // Improved security that still allows proper connection
     fs: {
-      // Strict allow list of directories that can be served via the dev server
+      // Allow serving from project directory
       allow: [path.resolve(__dirname, '.')],
-      // Explicitly deny access to certain directories
-      deny: ['.git', '.env', 'node_modules/.cache'],
-      // Strict mode to prevent escaping the allow list
-      strict: true
+      // Still deny sensitive directories
+      deny: ['.git', '.env'],
+      // Use moderate strictness
+      strict: false
     },
-    // Prevent CORS from allowing other origins to access your dev server
-    cors: {
-      origin: false
-    },
-    // Prevents other websites from embedding your site in iframes
+    // Allow CORS for development
+    cors: true,
+    // Set security headers but allow embedding for development
     headers: {
-      'X-Frame-Options': 'DENY',
-      'Content-Security-Policy': "frame-ancestors 'none'",
+      'X-Content-Type-Options': 'nosniff',
     }
   },
   plugins: [
@@ -58,7 +54,7 @@ export default defineConfig(({ mode }) => ({
     include: ['react', 'react-dom', 'react-router-dom', 'dompurify'],
     exclude: [],
   },
-  // Enhanced security headers for production preview
+  // Keep enhanced security headers for production preview
   preview: {
     headers: {
       'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: https://*.supabase.co blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests;",
