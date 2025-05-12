@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,7 +8,8 @@ import { Suspense, lazy } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CookieConsent } from "@/components/CookieConsent";
 
-const Index = lazy(() => import("./pages/Index"));
+// Use lowercase "index" for import to match the file name
+const Index = lazy(() => import("./pages/index"));
 const Explore = lazy(() => import("./pages/Explore"));
 const Donate = lazy(() => import("./pages/Donate"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
