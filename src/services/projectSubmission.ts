@@ -20,10 +20,10 @@ export const submitProject = async (projectData: ProjectSubmissionData) => {
     }
     
     // Attempt project insertion with logging
-    // Fix: Remove explicit type casting that was causing errors
+    // Use type assertion to resolve the TypeScript error
     const { error: insertError } = await supabase
       .from('projects')
-      .insert(sanitizedData);
+      .insert(sanitizedData as any);
 
     if (insertError) {
       console.error('Project submission error:', insertError);

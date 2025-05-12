@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
@@ -69,10 +70,10 @@ export const Footer = () => {
       // Sanitize the email input
       const sanitizedEmail = sanitizeHtml(email).trim().toLowerCase();
       
-      // Fix: Use the simple object approach without explicit type casting
+      // Use type assertion to resolve the TypeScript error
       const { error } = await supabase
         .from('newsletter_subscribers')
-        .insert({ email: sanitizedEmail });
+        .insert({ email: sanitizedEmail } as any);
 
       if (error) {
         // Check if error is due to duplicate email

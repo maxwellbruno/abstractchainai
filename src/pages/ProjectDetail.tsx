@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { NavBar } from '@/components/NavBar';
@@ -11,39 +10,30 @@ import { Database } from "@/integrations/supabase/types";
 type Project = Database['public']['Tables']['projects']['Row'];
 
 const ProjectDetail = () => {
-  const { id } = useParams();
+  const { id: projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const { data: project, isLoading, error } = useQuery({
-    queryKey: ['project', id],
+    queryKey: ['project', projectId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
-        .eq('id', id as any) // Using type assertion to fix the TS error
-        .maybeSingle();
+        .eq('id', projectId)
+        .single();
       
       if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error loading project",
-          description: "Please try again later."
-        });
-        throw error;
+        console.error("Error fetching project details:", error);
+        throw new Error(error.message);
       }
       
       if (!data) {
-        toast({
-          variant: "destructive",
-          title: "Project not found",
-          description: "The requested project could not be found."
-        });
         return null;
       }
       
       // Fix: Add proper type casting to handle the Supabase result
-      return data as unknown as Project;
+      return data as any;
     },
   });
 
