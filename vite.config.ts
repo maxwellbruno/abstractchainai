@@ -83,10 +83,12 @@ export default defineConfig(({ mode }) => ({
     include: ['react', 'react-dom', 'react-router-dom', 'dompurify'],
     exclude: [],
   },
-  // Keep enhanced security headers for production preview
+  // Enhanced security headers for production preview with nonce support
   preview: {
     headers: {
-      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: https://*.supabase.co blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; object-src 'none'; base-uri 'self';",
+      'Content-Security-Policy': mode === 'development' 
+        ? "script-src 'self' 'unsafe-inline' https://cdn.gpteng.co;" 
+        : "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: https://*.supabase.co blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; object-src 'none'; base-uri 'self';",
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'X-XSS-Protection': '1; mode=block',
