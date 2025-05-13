@@ -1,3 +1,4 @@
+
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useProjectForm } from "@/hooks/useProjectForm";
@@ -154,7 +155,7 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
         return;
       }
 
-      // Enhanced input sanitization with strict settings
+      // Enhanced input sanitization with strict settings for XSS prevention
       const sanitizedData = {
         ...formData,
         name: sanitizeHtml(formData.name),

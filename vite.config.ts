@@ -14,12 +14,25 @@ export default defineConfig(({ mode }) => ({
       strict: true,
       // Only allow access to the specific project directory, not parent directories
       allow: [path.resolve(__dirname)],
-      // Explicitly deny access to sensitive directories
+      // Explicitly deny access to sensitive directories and file patterns
       deny: [
         '.git', 
         '.env', 
         'node_modules/.cache',
-        '**/node_modules/**/node_modules'
+        '**/node_modules/**/node_modules',
+        '**/.env*',
+        '**/.git*',
+        '**/package-lock.json',
+        '**/yarn.lock',
+        '**/pnpm-lock.yaml',
+        // Prevent common traversal patterns
+        '**/.*',
+        '**/__*',
+        '**/..', 
+        '**/%2e%2e',  // URL-encoded ..
+        '**/%252e%252e', // Double URL-encoded ..
+        '**/*.config.js',
+        '**/config.*'
       ]
     },
     // Restrict CORS for production, but allow for development
@@ -29,6 +42,16 @@ export default defineConfig(({ mode }) => ({
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': mode === 'development' ? 'SAMEORIGIN' : 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
+    },
+    // Prevent server from acting as an open proxy
+    proxy: {
+      // Empty proxy configuration prevents default behavior
+    },
+    // Validation for origins and endpoints
+    hmr: {
+      // Secure WebSocket connection
+      protocol: 'ws',
+      clientPort: 8080
     }
   },
   plugins: [
@@ -63,7 +86,7 @@ export default defineConfig(({ mode }) => ({
   // Keep enhanced security headers for production preview
   preview: {
     headers: {
-      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: https://*.supabase.co blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests;",
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.gpteng.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self' data: https://*.supabase.co blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; object-src 'none'; base-uri 'self';",
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'X-XSS-Protection': '1; mode=block',

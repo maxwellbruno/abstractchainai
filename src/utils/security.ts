@@ -21,6 +21,10 @@ const configureDOMPurify = () => {
     ADD_URI_SAFE_ATTR: [],
     // Remove prototype pollution vulnerability - set USE_PROFILES explicitly
     USE_PROFILES: { html: true },
+    // Prevent nesting-based mXSS vulnerability
+    WHOLE_DOCUMENT: false,
+    SANITIZE_DOM: true,
+    SAFE_FOR_TEMPLATES: true
   });
 
   // Hook to force all links to open in a new tab and have noopener/noreferrer
@@ -34,6 +38,19 @@ const configureDOMPurify = () => {
       node.removeAttribute('__proto__');
       node.removeAttribute('constructor');
     }
+  });
+  
+  // Add a hook to prevent nesting-based mXSS attacks
+  DOMPurify.addHook('beforeSanitizeElements', (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      // Check for potentially malicious nesting patterns
+      const content = node.textContent || '';
+      if (content.includes('<script') || content.includes('<style') || 
+          content.includes('<if') || content.includes('<object')) {
+        node.textContent = DOMPurify.sanitize(content);
+      }
+    }
+    return node;
   });
 };
 
@@ -49,7 +66,8 @@ export const sanitizeHtml = (html: string): string => {
     USE_PROFILES: { html: true },
     FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'],
     WHOLE_DOCUMENT: false,
-    SANITIZE_DOM: true
+    SANITIZE_DOM: true,
+    SAFE_FOR_TEMPLATES: true
   });
 };
 

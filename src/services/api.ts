@@ -38,7 +38,7 @@ export const handleApiError = (error: unknown): ApiError => {
 };
 
 /**
- * Secure data sanitizer to prevent XSS attacks
+ * Secure data sanitizer to prevent XSS attacks and prototype pollution
  */
 export const sanitizeData = <T>(data: T): T => {
   if (!data) return data;
@@ -52,12 +52,20 @@ export const sanitizeData = <T>(data: T): T => {
   }
   
   if (typeof data === 'object' && data !== null) {
-    const sanitizedData: Record<string, any> = {};
+    // Create a new object without inheriting from Object.prototype
+    // This prevents prototype pollution attacks
+    const sanitizedData = Object.create(null);
     
     Object.entries(data).forEach(([key, value]) => {
-      // Skip __proto__ and constructor to prevent prototype pollution
-      if (key !== '__proto__' && key !== 'constructor') {
-        sanitizedData[key] = sanitizeData(value);
+      // Skip dangerous properties to prevent prototype pollution
+      if (key !== '__proto__' && key !== 'constructor' && key !== 'prototype') {
+        // Use Object.defineProperty to avoid using potentially polluted assignment
+        Object.defineProperty(sanitizedData, key, {
+          value: sanitizeData(value),
+          writable: true,
+          enumerable: true,
+          configurable: true
+        });
       }
     });
     
