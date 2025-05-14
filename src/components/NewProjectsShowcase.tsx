@@ -65,7 +65,7 @@ export const NewProjectsShowcase = () => {
         New Projects
       </h2>
       
-      <div className="max-w-5xl mx-auto relative px-4">
+      <div className="max-w-5xl mx-auto relative px-6">
         <Carousel className="w-full">
           <CarouselContent>
             {safeProjects.map((project) => (
