@@ -19,32 +19,32 @@ export const MobileMenu = ({ scrollToAbout }: MobileMenuProps) => {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[280px] sm:w-[350px] bg-black border-gray-800">
+      <SheetContent className="w-[280px] sm:w-[350px] bg-black border-gray-800 overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="text-white">Menu</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-4 mt-6">
           <Link 
             to="/" 
-            className="text-lg text-white hover:text-primary transition-colors"
+            className="text-lg text-white hover:text-primary transition-colors py-2"
           >
             Home
           </Link>
           <Link 
             to="/explore" 
-            className="text-lg text-white hover:text-primary transition-colors"
+            className="text-lg text-white hover:text-primary transition-colors py-2"
           >
             Projects
           </Link>
           <button 
             onClick={scrollToAbout} 
-            className="text-left text-lg text-white hover:text-primary transition-colors"
+            className="text-left text-lg text-white hover:text-primary transition-colors py-2"
           >
             About
           </button>
           <Link 
             to="/donate" 
-            className="text-lg text-white hover:text-primary transition-colors"
+            className="text-lg text-white hover:text-primary transition-colors py-2"
           >
             Donate
           </Link>
