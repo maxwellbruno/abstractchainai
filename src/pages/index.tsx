@@ -33,28 +33,28 @@ const Index = () => {
       <NavBar />
       <div className="pt-16">
         <HeroSection />
-        <div className="space-y-4 md:space-y-8"> {/* Reduced spacing, especially on mobile */}
+        <div className="space-y-2 md:space-y-4"> {/* Further reduced spacing for better mobile layout */}
           <Suspense fallback={<LoadingGrid />}>
             <NewProjectsShowcase />
           </Suspense>
           <Suspense fallback={<LoadingGrid />}>
             <ProjectShowcase />
           </Suspense>
-          <div id="about-section" className="py-8 px-4 md:py-12"> {/* Reduced padding on mobile */}
+          <div id="about-section" className="py-6 px-4 md:py-8"> {/* Reduced padding for better spacing */}
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
                 About AbstractchainAI
               </h2>
-              <p className="text-gray-400 text-base md:text-lg lg:text-xl px-2">
+              <p className="text-gray-400 text-sm md:text-base lg:text-lg px-2">
                 AbstractchainAI is a platform that brings together innovative projects at the intersection of artificial intelligence and blockchain technology. We provide a space for developers, entrepreneurs, and visionaries to showcase their groundbreaking solutions and connect with a community of like-minded individuals.
               </p>
             </div>
           </div>
           <SubmissionForm />
-          <div className="py-6 md:py-10 px-4 text-center"> {/* Reduced padding on mobile */}
+          <div className="py-4 md:py-6 px-4 text-center"> {/* Reduced padding for better spacing */}
             <Button
               onClick={() => navigate('/donate')}
-              className="bg-primary hover:bg-primary-hover text-black font-semibold px-6 md:px-8 py-3 md:py-4 text-base md:text-lg w-full sm:w-auto"
+              className="bg-primary hover:bg-primary-hover text-black font-semibold px-4 md:px-6 py-2 md:py-3 text-sm md:text-base w-full sm:w-auto"
             >
               Support Our Project
             </Button>
