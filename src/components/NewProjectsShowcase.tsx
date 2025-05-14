@@ -37,7 +37,7 @@ export const NewProjectsShowcase = () => {
 
   if (isLoading) {
     return (
-      <div className="py-20 px-4">
+      <div className="py-12 px-4">
         <h2 className="text-3xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
           New Projects
         </h2>
@@ -58,18 +58,18 @@ export const NewProjectsShowcase = () => {
   const safeProjects = Array.isArray(projects) ? projects : [];
 
   return (
-    <div className="py-20 px-4">
+    <div className="py-12 px-4">
       <h2 className="text-3xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
         New Projects
       </h2>
       
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto relative">
         <Carousel className="w-full">
           <CarouselContent>
             {safeProjects.map((project) => (
               <CarouselItem key={project.id} className="md:basis-1/2 lg:basis-1/3">
                 <div 
-                  className="mx-2 cursor-pointer group h-[360px]"
+                  className="mx-2 cursor-pointer group h-[300px]"
                   onClick={() => navigate(`/project/${project.id}`)}
                 >
                   <div className="relative h-48 rounded-lg overflow-hidden">
@@ -83,12 +83,13 @@ export const NewProjectsShowcase = () => {
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
+                  <div className="mt-2 font-medium">{project.name}</div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
+          <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 md:flex" />
+          <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 md:flex" />
         </Carousel>
       </div>
     </div>

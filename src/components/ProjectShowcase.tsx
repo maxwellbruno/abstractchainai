@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Database } from "@/integrations/supabase/types";
 import { ProjectCard } from "./projects/ProjectCard";
 import { CategoryFilter } from "./projects/CategoryFilter";
@@ -16,6 +16,7 @@ const ITEMS_PER_PAGE = 3;
 export const ProjectShowcase = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const showCategories = location.pathname === "/explore";
 
   const {
@@ -59,15 +60,23 @@ export const ProjectShowcase = () => {
 
   if (isLoading) {
     return (
-      <div className="py-20 px-4">
+      <div className="py-12 px-4">
         <h2 className="text-3xl font-bold mb-8 text-center">Featured Projects</h2>
         <LoadingGrid />
       </div>
     );
   }
 
+  const handleLoadMore = () => {
+    if (location.pathname === "/explore") {
+      fetchNextPage();
+    } else {
+      navigate('/explore');
+    }
+  };
+
   return (
-    <div className="py-20 px-4">
+    <div className="py-12 px-4">
       <h2 className="text-3xl font-bold mb-8 text-center">Featured Projects</h2>
       
       {showCategories && (
@@ -83,18 +92,18 @@ export const ProjectShowcase = () => {
         ))}
       </div>
 
-      {hasNextPage && (
-        <div className="text-center mt-12">
-          <Button
-            onClick={() => fetchNextPage()}
-            disabled={isFetchingNextPage}
-            variant="outline"
-            className="border-primary text-primary hover:bg-primary hover:text-black"
-          >
-            {isFetchingNextPage ? 'Loading more...' : 'Load More Projects'}
-          </Button>
-        </div>
-      )}
+      <div className="text-center mt-12">
+        <Button
+          onClick={handleLoadMore}
+          disabled={isFetchingNextPage}
+          variant="outline"
+          className="border-primary text-primary hover:bg-primary hover:text-black"
+        >
+          {location.pathname === "/explore" 
+            ? (isFetchingNextPage ? 'Loading more...' : 'Load More Projects')
+            : 'View All Projects'}
+        </Button>
+      </div>
     </div>
   );
 };
