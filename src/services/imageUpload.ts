@@ -91,7 +91,7 @@ const sanitizeFileName = (fileName: string): string => {
 };
 
 /**
- * Enhanced secure file upload with content type verification
+ * Enhanced secure file upload with content type verification, doesn't require authentication
  */
 export const uploadProjectImage = async (image: File): Promise<string> => {
   try {
@@ -115,12 +115,6 @@ export const uploadProjectImage = async (image: File): Promise<string> => {
       throw new Error('File content does not match the declared image type');
     }
 
-    // Check authentication
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Authentication required to upload images");
-    }
-
     // Sanitize the file name
     const sanitizedFileName = sanitizeFileName(image.name);
     
@@ -129,7 +123,7 @@ export const uploadProjectImage = async (image: File): Promise<string> => {
     const randomId = crypto.randomUUID();
     const filePath = `${randomId}-${timestamp}.${fileExt}`;
 
-    // Upload the file to Supabase Storage with enhanced security
+    // Upload the file to Supabase Storage with enhanced security, removing auth check
     const { error: uploadError, data } = await supabase.storage
       .from('project-covers')
       .upload(filePath, image, {
@@ -155,7 +149,6 @@ export const uploadProjectImage = async (image: File): Promise<string> => {
     // Log successful upload (for audit trail)
     console.info('Image uploaded successfully', {
       path: filePath,
-      userId: user?.id,
       timestamp: new Date().toISOString()
     });
 

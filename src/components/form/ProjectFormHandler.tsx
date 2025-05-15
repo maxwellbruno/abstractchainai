@@ -164,23 +164,21 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
         features: sanitizeHtml(formData.features),
       };
 
-      // Check authentication state with enhanced session validation
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data.user) {
-        console.error("Authentication error:", error);
-        toast({
-          title: "Authentication Error",
-          description: "You must be logged in to submit a project",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
+      // Check if user is authenticated, but don't require it
+      let userId = null;
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (data?.user) {
+          userId = data.user.id;
+        }
+      } catch (error) {
+        console.log("User not authenticated, continuing as guest");
       }
 
       const projectData = {
         ...sanitizedData,
         image_url,
-        user_id: data.user.id,
+        user_id: userId, // This can be null and will be handled in submitProject
         approved: false,
       };
 

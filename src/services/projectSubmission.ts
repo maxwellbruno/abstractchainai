@@ -3,24 +3,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProjectSubmissionData } from "@/types/project";
 import { handleApiError, sanitizeData } from "./api";
 import { toast } from "sonner";
-import { Database } from "@/integrations/supabase/types";
 
 /**
- * Submits a project with enhanced security
+ * Submits a project without requiring authentication
  */
 export const submitProject = async (projectData: ProjectSubmissionData) => {
   try {
     // Sanitize input data to prevent XSS
     const sanitizedData = sanitizeData(projectData);
     
-    // Check authentication
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      throw new Error("Authentication required to submit projects");
+    // Generate a random user ID for unauthenticated users
+    if (!sanitizedData.user_id) {
+      sanitizedData.user_id = crypto.randomUUID();
     }
     
     // Attempt project insertion with logging
-    // Use type assertion to resolve the TypeScript error
     const { error: insertError } = await supabase
       .from('projects')
       .insert(sanitizedData as any);
@@ -45,7 +42,7 @@ export const submitProject = async (projectData: ProjectSubmissionData) => {
     // Log successful submission (for audit trail)
     console.info('Project submitted successfully', {
       projectId: sanitizedData.name,
-      userId: user?.id,
+      userId: sanitizedData.user_id,
       timestamp: new Date().toISOString()
     });
     
