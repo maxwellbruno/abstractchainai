@@ -1,93 +1,104 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { handleApiError } from "./api";
-import { toast } from "sonner";
+import { sanitizeHtml } from "@/utils/security";
 
-// Maximum file size in bytes (5MB)
+// Maximum allowed file size (5MB)
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-// Allowed MIME types
-const ALLOWED_MIME_TYPES = [
+// Allowed image MIME types
+const ALLOWED_IMAGE_TYPES = [
   'image/jpeg', 
   'image/png', 
   'image/webp', 
-  'image/gif'
+  'image/gif',
+  'image/svg+xml'
 ];
 
-// List of known magic bytes for image validation
-const MAGIC_BYTES = {
-  'image/jpeg': [
-    [0xFF, 0xD8, 0xFF],
-  ],
-  'image/png': [
-    [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A],
-  ],
-  'image/webp': [
-    [0x52, 0x49, 0x46, 0x46],
-  ],
-  'image/gif': [
-    [0x47, 0x49, 0x46, 0x38, 0x37, 0x61],
-    [0x47, 0x49, 0x46, 0x38, 0x39, 0x61],
-  ],
-};
-
 /**
- * Validates file contents against known file signatures
+ * Validates file type and returns its extension
  */
-const validateFileSignature = async (file: File): Promise<boolean> => {
-  try {
-    // Read the first few bytes of the file
-    const firstBytes = await readFileHeader(file, 8);
-    
-    // Get the expected signatures for the claimed MIME type
-    const expectedSignatures = MAGIC_BYTES[file.type as keyof typeof MAGIC_BYTES];
-    if (!expectedSignatures) return false;
-    
-    // Check if the file header matches any of the expected signatures
-    return expectedSignatures.some(signature => 
-      signature.every((byte, i) => i >= firstBytes.length || byte === firstBytes[i])
-    );
-  } catch (error) {
-    console.error("File signature validation error:", error);
-    return false;
+export const validateImageType = (file: File): string => {
+  const fileType = file.type.toLowerCase();
+  
+  // Check if the file type is in our allowed list
+  if (!ALLOWED_IMAGE_TYPES.includes(fileType)) {
+    throw new Error(`Unsupported file type: ${fileType}. Please use JPEG, PNG, WebP, GIF, or SVG.`);
   }
+  
+  // Extract extension from mime type
+  let extension = fileType.split('/')[1];
+  
+  // Handle special cases
+  if (extension === 'jpeg') extension = 'jpg';
+  if (extension === 'svg+xml') extension = 'svg';
+  
+  return extension;
 };
 
 /**
- * Reads the first n bytes of a file
+ * Sanitize a filename to prevent path traversal and other attacks
  */
-const readFileHeader = async (file: File, bytesToRead: number): Promise<number[]> => {
-  return new Promise((resolve, reject) => {
+export const sanitizeFileName = (fileName: string): string => {
+  // Remove any path information
+  let safeName = fileName.replace(/^.*[\\\/]/, '');
+  
+  // Remove any special characters that could be used for attacks
+  // Allow only alphanumeric, spaces, hyphens, underscores, and dots
+  safeName = safeName.replace(/[^\w\s.-]/g, '');
+  
+  // Limit the length
+  if (safeName.length > 100) {
+    const extension = safeName.includes('.') 
+      ? safeName.substring(safeName.lastIndexOf('.')) 
+      : '';
+    safeName = safeName.substring(0, 100 - extension.length) + extension;
+  }
+  
+  // Ensure no double dots to prevent sneaky extensions
+  safeName = safeName.replace(/\.{2,}/g, '.');
+  
+  // Fallback if name is somehow empty after sanitization
+  if (!safeName || safeName.length === 0) {
+    safeName = 'file_' + Date.now();
+  }
+  
+  return sanitizeHtml(safeName);
+};
+
+/**
+ * Reads a file to check if it's really what it claims to be
+ */
+export const validateFileContent = async (file: File): Promise<boolean> => {
+  // Only perform deep validation for certain file types
+  if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
+    return true;
+  }
+  
+  return new Promise((resolve) => {
     const reader = new FileReader();
+    
     reader.onload = (e) => {
-      try {
-        if (!e.target?.result) {
-          reject(new Error("Failed to read file"));
-          return;
-        }
-        
-        const buffer = e.target.result as ArrayBuffer;
-        const bytes = Array.from(new Uint8Array(buffer).slice(0, bytesToRead));
-        resolve(bytes);
-      } catch (error) {
-        reject(error);
+      const arr = new Uint8Array(e.target!.result as ArrayBuffer);
+      
+      // Check file signatures (magic numbers)
+      if (file.type === 'image/jpeg' && arr[0] === 0xFF && arr[1] === 0xD8 && arr[2] === 0xFF) {
+        resolve(true);
+      } else if (file.type === 'image/png' && 
+                arr[0] === 0x89 && arr[1] === 0x50 && arr[2] === 0x4E && arr[3] === 0x47) {
+        resolve(true);
+      } else if (file.type === 'image/gif' && 
+                arr[0] === 0x47 && arr[1] === 0x49 && arr[2] === 0x46 && arr[3] === 0x38) {
+        resolve(true);
+      } else {
+        resolve(false);
       }
     };
     
-    reader.onerror = (e) => reject(e);
-    reader.readAsArrayBuffer(file.slice(0, bytesToRead));
+    reader.onerror = () => resolve(false);
+    
+    // Read only the first few bytes
+    reader.readAsArrayBuffer(file.slice(0, 4));
   });
-};
-
-/**
- * Sanitizes a filename to prevent path traversal attacks
- */
-const sanitizeFileName = (fileName: string): string => {
-  return fileName
-    .replace(/[^\x00-\x7F]/g, '') // Remove non-ASCII
-    .replace(/[\/\\]/g, '') // Remove path separators
-    .replace(/[.]{2,}/g, '.') // Replace multiple dots with a single dot
-    .replace(/[^a-zA-Z0-9._-]/g, '_'); // Replace other special chars
 };
 
 /**
@@ -95,55 +106,53 @@ const sanitizeFileName = (fileName: string): string => {
  */
 export const uploadProjectImage = async (image: File): Promise<string> => {
   try {
-    if (!image) {
-      throw new Error('No image provided');
-    }
-
-    // Validate file size
+    // Size validation
     if (image.size > MAX_FILE_SIZE) {
-      throw new Error('File size exceeds the 5MB limit');
+      throw new Error(`File too large: ${(image.size / 1024 / 1024).toFixed(2)}MB. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
     }
-
-    // Validate file type using actual MIME type
-    if (!ALLOWED_MIME_TYPES.includes(image.type)) {
-      throw new Error('Invalid file type. Only JPEG, PNG, WebP and GIF images are allowed');
-    }
-
-    // Advanced file content validation
-    const isValidSignature = await validateFileSignature(image);
-    if (!isValidSignature) {
+    
+    // Check file type and get extension
+    const fileExt = validateImageType(image);
+    
+    // Additional security check to prevent harmful uploads
+    const isValidContent = await validateFileContent(image);
+    if (!isValidContent) {
       throw new Error('File content does not match the declared image type');
     }
 
     // Sanitize the file name
     const sanitizedFileName = sanitizeFileName(image.name);
     
-    const fileExt = sanitizedFileName.split('.').pop();
+    // Generate a unique file name with timestamp to prevent collisions
     const timestamp = Date.now();
     const randomId = crypto.randomUUID();
     const filePath = `${randomId}-${timestamp}.${fileExt}`;
 
-    // Upload the file to Supabase Storage with enhanced security, removing auth check
+    // Upload the file to Supabase Storage with enhanced security, allowing anonymous uploads
     const { error: uploadError, data } = await supabase.storage
       .from('project-covers')
       .upload(filePath, image, {
         cacheControl: '3600',
-        upsert: false,
-        contentType: image.type // Explicitly set the content type
+        contentType: image.type,
+        upsert: false
       });
 
     if (uploadError) {
       console.error('Upload error:', uploadError);
-      throw new Error('Failed to upload image: ' + uploadError.message);
+      throw new Error(uploadError.message || 'Failed to upload image');
     }
 
-    // Get the public URL for the uploaded file
-    const { data: { publicUrl } } = supabase.storage
-      .from('project-covers')
-      .getPublicUrl(filePath);
+    if (!data?.path) {
+      throw new Error('Upload failed - no path returned');
+    }
 
-    if (!publicUrl) {
-      throw new Error('Failed to get public URL for uploaded image');
+    // Get the public URL
+    const { data: urlData } = supabase.storage
+      .from('project-covers')
+      .getPublicUrl(data.path);
+
+    if (!urlData?.publicUrl) {
+      throw new Error('Failed to get public URL for uploaded file');
     }
 
     // Log successful upload (for audit trail)
@@ -152,10 +161,9 @@ export const uploadProjectImage = async (image: File): Promise<string> => {
       timestamp: new Date().toISOString()
     });
 
-    return publicUrl;
-  } catch (error) {
-    const apiError = handleApiError(error);
-    toast.error(apiError.message);
+    return urlData.publicUrl;
+  } catch (error: any) {
+    console.error('Image upload error:', error);
     throw error;
   }
 };

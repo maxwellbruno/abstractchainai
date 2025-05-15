@@ -12,7 +12,7 @@ export const submitProject = async (projectData: ProjectSubmissionData) => {
     // Sanitize input data to prevent XSS
     const sanitizedData = sanitizeData(projectData);
     
-    // Generate a random user ID for unauthenticated users
+    // Generate a random user ID for unauthenticated users if none provided
     if (!sanitizedData.user_id) {
       sanitizedData.user_id = crypto.randomUUID();
     }
@@ -46,6 +46,7 @@ export const submitProject = async (projectData: ProjectSubmissionData) => {
       timestamp: new Date().toISOString()
     });
     
+    return { success: true, projectId: sanitizedData.name };
   } catch (error) {
     const apiError = handleApiError(error);
     toast.error(apiError.message);

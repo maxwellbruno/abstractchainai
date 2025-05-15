@@ -7,6 +7,7 @@ import { submitProject } from "@/services/projectSubmission";
 import { ProjectFormData } from "@/types/project";
 import { useState, useEffect } from "react";
 import { detectSuspiciousActivity, sanitizeHtml } from "@/utils/security";
+import { toast } from "sonner";
 
 interface ProjectFormHandlerProps {
   children: (props: {
@@ -178,20 +179,23 @@ export const ProjectFormHandler = ({ children }: ProjectFormHandlerProps) => {
       const projectData = {
         ...sanitizedData,
         image_url,
-        user_id: userId, // This can be null and will be handled in submitProject
+        user_id: userId, // This can be null now that we removed the foreign key constraint
         approved: false,
       };
 
-      await submitProject(projectData);
+      // Submit the project
+      const result = await submitProject(projectData);
       
       // Record the submission time for rate limiting
       localStorage.setItem(submissionKey, Date.now().toString());
 
+      // Show success message
       toast({
         title: "Success!",
         description: "Your project has been submitted successfully.",
       });
 
+      // Reset the form after successful submission
       resetForm();
     } catch (error: any) {
       console.error('Submission error:', error);
