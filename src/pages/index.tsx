@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Suspense, useEffect } from "react";
 import { LoadingGrid } from "@/components/projects/LoadingGrid";
+import { Separator } from "@/components/ui/separator";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -33,12 +34,26 @@ const Index = () => {
       <NavBar />
       <div className="pt-16">
         <HeroSection />
-        <Suspense fallback={<LoadingGrid />}>
-          <NewProjectsShowcase />
-        </Suspense>
+        
+        <div className="py-16 px-4 bg-gradient-to-b from-black to-card/30">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl font-bold mb-8 text-center">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
+                New Projects
+              </span>
+            </h2>
+            <Suspense fallback={<LoadingGrid />}>
+              <NewProjectsShowcase />
+            </Suspense>
+          </div>
+        </div>
+        
+        <Separator className="max-w-7xl mx-auto opacity-30" />
+        
         <Suspense fallback={<LoadingGrid />}>
           <ProjectShowcase />
         </Suspense>
+        
         <div id="about-section" className="py-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">

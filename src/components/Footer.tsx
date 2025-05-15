@@ -196,6 +196,11 @@ export const Footer = () => {
           <p className="text-xs text-gray-500">We respect your privacy. Unsubscribe at any time.</p>
         </div>
       </div>
+      
+      <div className="mt-16 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
+        <p>© 2025 AbstractchainAI. All rights reserved.</p>
+        <p className="mt-2">Made with 💚 by Maxwell Bruno</p>
+      </div>
     </footer>
   );
 };
