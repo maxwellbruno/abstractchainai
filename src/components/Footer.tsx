@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Twitter, Github, Mail } from "lucide-react";
+import { Twitter, Github, Mail, Heart } from "lucide-react";
 import { sanitizeHtml, validateEmail, RateLimiter } from "@/utils/security";
 import { toast } from "sonner";
 import { Database } from "@/integrations/supabase/types";
@@ -199,7 +199,7 @@ export const Footer = () => {
       
       <div className="mt-16 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
         <p>© 2025 AbstractchainAI. All rights reserved.</p>
-        <p className="mt-2">Made with 💚 by Maxwell Bruno</p>
+        <p className="mt-2">Made with <Heart className="inline-block h-4 w-4 text-primary fill-primary" /> by Maxwell Bruno</p>
       </div>
     </footer>
   );
