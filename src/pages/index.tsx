@@ -22,9 +22,8 @@ const Index = () => {
       if (aboutSection) {
         setTimeout(() => {
           aboutSection.scrollIntoView({ behavior: 'smooth' });
-        }, 100); // Small timeout to ensure DOM is ready
+        }, 100);
       }
-      // Clear the state to prevent scrolling on subsequent renders
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);

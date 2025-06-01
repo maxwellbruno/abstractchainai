@@ -36,6 +36,12 @@ export const MobileMenu = ({ scrollToAbout }: MobileMenuProps) => {
           >
             Projects
           </Link>
+          <Link 
+            to="/ai-assistant" 
+            className="text-lg text-white hover:text-primary transition-colors"
+          >
+            AI Assistant
+          </Link>
           <button 
             onClick={scrollToAbout} 
             className="text-left text-lg text-white hover:text-primary transition-colors"

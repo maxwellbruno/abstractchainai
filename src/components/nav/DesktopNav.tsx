@@ -13,6 +13,9 @@ export const DesktopNav = ({ scrollToAbout }: DesktopNavProps) => (
     <Link to="/explore" className="text-gray-300 hover:text-primary transition-colors">
       Projects
     </Link>
+    <Link to="/ai-assistant" className="text-gray-300 hover:text-primary transition-colors">
+      AI Assistant
+    </Link>
     <button
       onClick={scrollToAbout}
       className="text-gray-300 hover:text-primary transition-colors"

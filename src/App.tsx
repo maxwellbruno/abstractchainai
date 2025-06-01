@@ -7,13 +7,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CookieConsent } from "@/components/CookieConsent";
-import { checkSessionValidity } from "@/integrations/supabase/client";
 
-// Use lowercase "index" for import to match the file name
 const Index = lazy(() => import("./pages/index"));
 const Explore = lazy(() => import("./pages/Explore"));
 const Donate = lazy(() => import("./pages/Donate"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
+const AIAssistant = lazy(() => import("./pages/AIAssistant"));
 
 const LoadingFallback = () => (
   <div className="min-h-screen bg-background p-4 md:p-8">
@@ -28,8 +27,8 @@ const LoadingFallback = () => (
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes cache
-      gcTime: 1000 * 60 * 30, // 30 minutes garbage collection
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
       retry: 1,
       refetchOnWindowFocus: false,
     },
@@ -37,19 +36,6 @@ const queryClient = new QueryClient({
 });
 
 const AppWithSecurity = () => {
-  // Check session validity periodically
-  useEffect(() => {
-    // Initial check
-    checkSessionValidity();
-    
-    // Check every 5 minutes
-    const interval = setInterval(() => {
-      checkSessionValidity();
-    }, 5 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingFallback />}>
@@ -58,6 +44,7 @@ const AppWithSecurity = () => {
           <Route path="/explore" element={<Explore />} />
           <Route path="/donate" element={<Donate />} />
           <Route path="/project/:id" element={<ProjectDetail />} />
+          <Route path="/ai-assistant" element={<AIAssistant />} />
         </Routes>
       </Suspense>
       <CookieConsent />
