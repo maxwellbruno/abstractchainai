@@ -88,7 +88,7 @@ export const NavBar = () => {
                         <p className="line-clamp-2 text-sm leading-snug text-gray-400">
                           Support our project
                         </p>
-                      </button>
+                      </Link>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
