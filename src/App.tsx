@@ -4,9 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CookieConsent } from "@/components/CookieConsent";
+import { FloatingChatButton } from "@/components/FloatingChatButton";
 
 const Index = lazy(() => import("./pages/index"));
 const Explore = lazy(() => import("./pages/Explore"));
@@ -48,6 +49,7 @@ const AppWithSecurity = () => {
         </Routes>
       </Suspense>
       <CookieConsent />
+      <FloatingChatButton />
     </BrowserRouter>
   );
 };
