@@ -101,11 +101,11 @@ const AIAssistant = () => {
           <div className="max-w-4xl mx-auto p-4 flex flex-col items-center justify-center min-h-[80vh] text-center">
             <div className="mb-8">
               <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-hover">
-                Build something AbstractchainAI
+                Ask AbstractchainAI
               </h1>
               <p className="text-xl text-gray-300 mb-8">
-                Idea to blockchain app in seconds, with your<br />
-                personal full stack AI assistant
+                Your guide to Abstract Blockchain, ecosystem,<br />
+                applications, and AbstractchainAI projects
               </p>
             </div>
 
@@ -115,7 +115,7 @@ const AIAssistant = () => {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask AbstractchainAI to create a blockchain application"
+                  placeholder="Ask about Abstract Blockchain or AbstractchainAI projects"
                   className="w-full h-16 text-lg bg-gray-900 border-gray-700 focus:border-primary rounded-xl px-6 pr-16"
                   disabled={isLoading}
                 />

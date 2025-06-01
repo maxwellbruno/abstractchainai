@@ -39,7 +39,7 @@ export const FloatingChatButton = () => {
                 <h3 className="font-semibold text-white">AbstractchainAI Assistant</h3>
               </div>
               <p className="text-gray-300 text-sm">
-                👋 Welcome! I'm here to help you with questions about Abstract Blockchain, blockchain applications, and AbstractchainAI projects.
+                👋 Welcome! I'm here to help you with questions about Abstract Blockchain, its ecosystem, applications, and AbstractchainAI projects.
               </p>
               <Button 
                 onClick={handleChatClick}
