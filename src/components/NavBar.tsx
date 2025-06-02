@@ -89,6 +89,15 @@ export const NavBar = () => {
                           Support our project
                         </p>
                       </Link>
+                      <button
+                        onClick={() => window.open('https://believe.app/coin/3m9rUmu4UUavPyuxv7biSmbv89EY2qCcqC7DNxdZVXY9', '_blank')}
+                        className="block w-full text-left select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-card hover:text-white focus:bg-card focus:text-white"
+                      >
+                        <div className="text-sm font-medium leading-none">Buy Token</div>
+                        <p className="line-clamp-2 text-sm leading-snug text-gray-400">
+                          Purchase our token
+                        </p>
+                      </button>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
