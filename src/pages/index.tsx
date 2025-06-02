@@ -73,7 +73,7 @@ const Index = () => {
           </Button>
           <br />
           <Button
-            onClick={() => window.open('https://dex.abstract.money', '_blank')}
+            onClick={() => window.open('https://believe.app/coin/3m9rUmu4UUavPyuxv7biSmbv89EY2qCcqC7DNxdZVXY9', '_blank')}
             variant="outline"
             className="border-primary text-primary hover:bg-primary hover:text-black font-semibold px-8 py-4 text-lg"
           >
