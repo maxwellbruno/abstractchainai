@@ -64,12 +64,20 @@ const Index = () => {
           </div>
         </div>
         <SubmissionForm />
-        <div className="py-16 px-4 text-center">
+        <div className="py-16 px-4 text-center space-y-4">
           <Button
             onClick={() => navigate('/donate')}
             className="bg-primary hover:bg-primary-hover text-black font-semibold px-8 py-4 text-lg"
           >
             Support Our Project
+          </Button>
+          <br />
+          <Button
+            onClick={() => window.open('https://dex.abstract.money', '_blank')}
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary hover:text-black font-semibold px-8 py-4 text-lg"
+          >
+            Buy Token
           </Button>
         </div>
         <Footer />
