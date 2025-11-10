@@ -72,7 +72,7 @@ const Index = () => {
                 What is $ABSCHAINAI Token?
               </h2>
               <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto">
-                $ABSCHAINAI is the unofficial token of AbstractchainAI, launched and available for trading on BelieveApp, running on the Solana blockchain.
+                $ABSCHAINAI is the unofficial token of AbstractchainAI, launched and available for trading on BelieveApp, running on the Abstractchain blockchain.
               </p>
             </div>
 
@@ -80,11 +80,11 @@ const Index = () => {
               <Card className="bg-card/50 border-gray-800">
                 <CardHeader className="text-center">
                   <Coins className="w-12 h-12 text-primary mx-auto mb-2" />
-                  <CardTitle className="text-lg">Solana-Based</CardTitle>
+                  <CardTitle className="text-lg">Abstractchain-Based</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="text-gray-400 text-center">
-                    Built on the fast and efficient Solana blockchain for low fees and quick transactions.
+                    Built on the fast and efficient Abstractchain blockchain for low fees and quick transactions.
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -134,7 +134,7 @@ const Index = () => {
                 Buy $ABSCHAINAI on BelieveApp
               </Button>
               <p className="text-sm text-gray-500 mt-2">
-                Trading on Solana blockchain via BelieveApp
+                Trading on Abstractchain blockchain via BelieveApp
               </p>
             </div>
           </div>

@@ -22,7 +22,7 @@ const getOrCreateEncryptionKey = async (): Promise<CryptoKey> => {
       const keyData = _base64ToArrayBuffer(storedKey);
       return await window.crypto.subtle.importKey(
         'raw',
-        keyData,
+        keyData as BufferSource,
         { name: 'AES-GCM' },
         false,
         ['encrypt', 'decrypt']
@@ -123,8 +123,8 @@ const decryptData = async (encryptedBase64: string): Promise<string> => {
 };
 
 // Helper functions
-const _arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
-  const bytes = new Uint8Array(buffer);
+const _arrayBufferToBase64 = (buffer: ArrayBuffer | Uint8Array): string => {
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
   let binary = '';
   for (let i = 0; i < bytes.byteLength; i++) {
     binary += String.fromCharCode(bytes[i]);
