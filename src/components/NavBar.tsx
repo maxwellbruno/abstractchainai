@@ -89,15 +89,15 @@ export const NavBar = () => {
                           Support our project
                         </p>
                       </Link>
-                      <button
-                        onClick={() => window.open('https://believe.app/coin/3m9rUmu4UUavPyuxv7biSmbv89EY2qCcqC7DNxdZVXY9', '_blank')}
-                        className="block w-full text-left select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-card hover:text-white focus:bg-card focus:text-white"
+                      <Link
+                        to="/token"
+                        className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-card hover:text-white focus:bg-card focus:text-white"
                       >
-                        <div className="text-sm font-medium leading-none">Buy Token</div>
+                        <div className="text-sm font-medium leading-none">Token Info</div>
                         <p className="line-clamp-2 text-sm leading-snug text-gray-400">
-                          Purchase our token
+                          Learn about $ABSCHAINAI
                         </p>
-                      </button>
+                      </Link>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>

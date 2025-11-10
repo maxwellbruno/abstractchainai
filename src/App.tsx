@@ -14,6 +14,7 @@ const Explore = lazy(() => import("./pages/Explore"));
 const Donate = lazy(() => import("./pages/Donate"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const AIAssistant = lazy(() => import("./pages/AIAssistant"));
+const Token = lazy(() => import("./pages/Token"));
 
 const LoadingFallback = () => (
   <div className="min-h-screen bg-background p-4 md:p-8">
@@ -46,6 +47,7 @@ const AppWithSecurity = () => {
           <Route path="/donate" element={<Donate />} />
           <Route path="/project/:id" element={<ProjectDetail />} />
           <Route path="/ai-assistant" element={<AIAssistant />} />
+          <Route path="/token" element={<Token />} />
         </Routes>
       </Suspense>
       <CookieConsent />

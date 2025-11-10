@@ -128,13 +128,13 @@ const Index = () => {
 
             <div className="text-center">
               <Button
-                onClick={() => window.open('https://believe.app/coin/3m9rUmu4UUavPyuxv7biSmbv89EY2qCcqC7DNxdZVXY9', '_blank')}
+                onClick={() => navigate('/token')}
                 className="bg-primary hover:bg-primary-hover text-black font-semibold px-8 py-4 text-lg"
               >
-                Buy $ABSCHAINAI on BelieveApp
+                Learn More About $ABSCHAINAI
               </Button>
               <p className="text-sm text-gray-500 mt-2">
-                Trading on Abstractchain blockchain via BelieveApp
+                Official memecoin launching soon on Abstract blockchain
               </p>
             </div>
           </div>
@@ -150,11 +150,11 @@ const Index = () => {
           </Button>
           <br />
           <Button
-            onClick={() => window.open('https://believe.app/coin/3m9rUmu4UUavPyuxv7biSmbv89EY2qCcqC7DNxdZVXY9', '_blank')}
+            onClick={() => navigate('/token')}
             variant="outline"
             className="border-primary text-primary hover:bg-primary hover:text-black font-semibold px-8 py-4 text-lg"
           >
-            Buy Token
+            Token Info
           </Button>
         </div>
         <Footer />

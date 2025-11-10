@@ -54,13 +54,14 @@ export const MobileMenu = ({ scrollToAbout }: MobileMenuProps) => {
           >
             Donate
           </Link>
-          <Button
-            onClick={() => window.open('https://believe.app/coin/3m9rUmu4UUavPyuxv7biSmbv89EY2qCcqC7DNxdZVXY9', '_blank')}
-            variant="outline"
-            className="border-primary text-primary hover:bg-primary hover:text-black font-semibold"
-          >
-            Buy Token
-          </Button>
+          <Link to="/token">
+            <Button
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary hover:text-black font-semibold w-full"
+            >
+              Token Info
+            </Button>
+          </Link>
           <div className="mt-4">
             <Input
               type="search"
